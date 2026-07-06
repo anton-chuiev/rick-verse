@@ -143,7 +143,63 @@ final class FavoriteCharacter {
 | API           | Rick and Morty API (rickandmortyapi.com)  |
 | Testing       | Swift Testing                             |
 | Min iOS       | iOS 17+                                   |
-| Dependencies  | None (Apple-native stack only)            |
+| Dependencies  | Kingfisher (image loading/caching)        |
+
+---
+
+## 🧩 Module Structure
+
+Layer-first: Clean Architecture layers at the top level, features grouped inside Presentation. The folder tree mirrors the dependency direction (Presentation → Domain ← Data).
+
+```
+RickVerse/
+├── App/                          # rick_verseApp, DI container, AppCoordinator
+├── Presentation/
+│   ├── Characters/
+│   │   ├── CharactersCoordinator.swift
+│   │   ├── List/                 # CharactersListView + ViewModel
+│   │   └── Detail/               # CharacterDetailView + ViewModel
+│   ├── Episodes/
+│   │   ├── EpisodesCoordinator.swift
+│   │   ├── List/
+│   │   └── Detail/
+│   ├── Locations/
+│   │   ├── LocationsCoordinator.swift
+│   │   ├── List/
+│   │   └── Detail/
+│   ├── Favorites/
+│   │   ├── FavoritesCoordinator.swift
+│   │   └── ...
+│   ├── Search/
+│   ├── Settings/
+│   │   ├── SettingsCoordinator.swift
+│   │   └── ...
+│   ├── Splash/
+│   └── Common/                   # reusable views, modifiers, styles
+├── Domain/
+│   ├── Entities/                 # Character, Episode, Location — pure structs
+│   ├── UseCases/                 # protocol + Default impl, one file each
+│   └── Repositories/             # protocols only
+├── Data/
+│   ├── Network/                  # APIClient, endpoints, DTOs + mappers
+│   ├── Persistence/              # SwiftData stack, FavoriteCharacter
+│   └── Repositories/             # protocol implementations
+└── Resources/                    # assets, Info.plist
+```
+
+### Use Case Convention
+
+- ViewModels depend on use case **protocols**, never on implementations — required for unit-testing ViewModels with trivial mocks.
+- Protocol and its default implementation live in **one file**: `Domain/UseCases/FetchCharactersUseCase.swift` contains `protocol FetchCharactersUseCase` + `struct DefaultFetchCharactersUseCase`.
+- Keep protocols narrow: a single `execute` method per use case.
+- Don't create a use case when there is no orchestration — trivial pass-throughs may call the repository directly. A use case earns its place when it composes logic (e.g. batch episode fetch `/episode/1,2,3` on top of the repository).
+
+### Coordinator Convention
+
+- **One coordinator per flow (= per tab = per NavigationStack)**, not per screen: `CharactersCoordinator`, `EpisodesCoordinator`, `LocationsCoordinator`, `FavoritesCoordinator`, `SettingsCoordinator`.
+- A flow coordinator is an `@Observable` object owning `path: [Route]`, its feature's `Route` enum, and screen-building via `navigationDestination`.
+- ViewModels know nothing about navigation — they call their coordinator (or emit events via closures) and the coordinator decides.
+- `AppCoordinator` stays thin: splash → tabs routing, tab selection, holding the five child coordinators. Cross-tab navigation (e.g. Favorites → Character Detail in the Characters tab) goes through `AppCoordinator` — the only place it is allowed.
 
 ---
 
