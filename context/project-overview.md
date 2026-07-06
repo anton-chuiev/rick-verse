@@ -205,12 +205,16 @@ RickVerse/
 
 ## 🎨 UI / UX
 
-- Dark mode support
+- Light and Dark mode support
 - TabView root: Characters / Episodes / Locations / Favorites / Settings
 - Push navigation within each tab
 - Skeleton/shimmer loading states
 - Kingfisher for character/location images
 
+### Screenshots
+Refer to the screenshots below as a base. It doesn't need to be exact. Use them as a reference.
+- @context/screenshots/characters-ui-light
+- @context/screenshots/characters-ui-dark
 
 ---
 
