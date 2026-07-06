@@ -6,8 +6,19 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F9E9C7842FFBBC4500024374 /* coding-standards.md in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C7802FFBBC4500024374 /* coding-standards.md */; };
+		F9E9C7852FFBBC4500024374 /* project-overview.md in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C7822FFBBC4500024374 /* project-overview.md */; };
+		F9E9C7862FFBBC4500024374 /* current-feature.md in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C7812FFBBC4500024374 /* current-feature.md */; };
+		F9E9C7872FFBBC4500024374 /* ai-interaction.md in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C77F2FFBBC4500024374 /* ai-interaction.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F9E9C76B2FF7DBF500024374 /* rick-verse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rick-verse.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9E9C77F2FFBBC4500024374 /* ai-interaction.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "ai-interaction.md"; sourceTree = "<group>"; };
+		F9E9C7802FFBBC4500024374 /* coding-standards.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "coding-standards.md"; sourceTree = "<group>"; };
+		F9E9C7812FFBBC4500024374 /* current-feature.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "current-feature.md"; sourceTree = "<group>"; };
+		F9E9C7822FFBBC4500024374 /* project-overview.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "project-overview.md"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +43,7 @@
 		F9E9C7622FF7DBF500024374 = {
 			isa = PBXGroup;
 			children = (
+				F9E9C7832FFBBC4500024374 /* context */,
 				F9E9C76D2FF7DBF500024374 /* rick-verse */,
 				F9E9C76C2FF7DBF500024374 /* Products */,
 			);
@@ -43,6 +55,17 @@
 				F9E9C76B2FF7DBF500024374 /* rick-verse.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F9E9C7832FFBBC4500024374 /* context */ = {
+			isa = PBXGroup;
+			children = (
+				F9E9C77F2FFBBC4500024374 /* ai-interaction.md */,
+				F9E9C7802FFBBC4500024374 /* coding-standards.md */,
+				F9E9C7812FFBBC4500024374 /* current-feature.md */,
+				F9E9C7822FFBBC4500024374 /* project-overview.md */,
+			);
+			path = context;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -109,6 +132,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9E9C7842FFBBC4500024374 /* coding-standards.md in Resources */,
+				F9E9C7852FFBBC4500024374 /* project-overview.md in Resources */,
+				F9E9C7862FFBBC4500024374 /* current-feature.md in Resources */,
+				F9E9C7872FFBBC4500024374 /* ai-interaction.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
