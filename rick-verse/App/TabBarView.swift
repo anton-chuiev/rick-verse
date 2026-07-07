@@ -47,5 +47,5 @@ struct TabBarView: View {
 }
 
 #Preview {
-    TabBarView(coordinator: AppCoordinator(), container: .live)
+    TabBarView(coordinator: AppCoordinator(), container: .preview)
 }

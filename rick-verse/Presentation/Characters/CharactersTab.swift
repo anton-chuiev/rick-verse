@@ -29,5 +29,5 @@ struct CharactersTab: View {
 }
 
 #Preview {
-    CharactersTab(coordinator: CharactersCoordinator(), container: .live)
+    CharactersTab(coordinator: CharactersCoordinator(), container: .preview)
 }

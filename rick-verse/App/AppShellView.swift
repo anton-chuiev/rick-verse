@@ -9,7 +9,13 @@ import SwiftUI
 /// bar once `AppCoordinator` reports the splash is finished.
 struct AppShellView: View {
     @State private var coordinator = AppCoordinator()
-    private let container: AppContainer = .live
+    let container: AppContainer
+
+    /// Defaults to the live container for the running app; previews pass
+    /// `.preview` to stay networkless.
+    init(container: AppContainer = .live) {
+        self.container = container
+    }
 
     var body: some View {
         Group {
@@ -28,5 +34,5 @@ struct AppShellView: View {
 extension AppCoordinator.Phase: Equatable {}
 
 #Preview {
-    AppShellView()
+    AppShellView(container: .preview)
 }
