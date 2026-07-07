@@ -5,18 +5,28 @@
 
 import Foundation
 
-/// Composition root. Builds the dependency graph (API client → repository →
-/// use case → view model) so views and coordinators don't wire concrete types
-/// themselves. Value type: cheap to pass down through the view tree.
+/// Composition root. Holds the app's repositories (the domain data boundary)
+/// and builds view models from them, so views and coordinators don't wire
+/// concrete types themselves. Value type: cheap to pass down the view tree.
 struct AppContainer {
-    let apiClient: APIClient
+    let characterRepository: CharacterRepository
 
-    /// The live container backed by the real Rick and Morty API.
-    static let live = AppContainer(apiClient: URLSessionAPIClient())
+    /// The live container: real repositories backed by the Rick and Morty API
+    /// over a shared `URLSession` client.
+    static let live: AppContainer = {
+        let apiClient = URLSessionAPIClient()
+        return AppContainer(
+            characterRepository: DefaultCharacterRepository(apiClient: apiClient)
+        )
+    }()
 
-    private var characterRepository: CharacterRepository {
-        DefaultCharacterRepository(apiClient: apiClient)
-    }
+    #if DEBUG
+    /// Container for SwiftUI previews: real use cases / view models over
+    /// networkless stub repositories. Never used in a release build.
+    static let preview = AppContainer(
+        characterRepository: PreviewCharacterRepository()
+    )
+    #endif
 
     @MainActor
     func makeCharactersListViewModel() -> CharactersListViewModel {
