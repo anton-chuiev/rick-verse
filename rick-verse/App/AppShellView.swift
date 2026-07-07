@@ -10,19 +10,12 @@ import SwiftUI
 struct AppShellView: View {
     @State private var coordinator = AppCoordinator()
 
-    /// How long the splash stays up before routing to the tabs. No warm-up
-    /// work happens yet — this is a placeholder duration.
-    private static let splashDuration: Duration = .seconds(1.5)
-
     var body: some View {
         Group {
             switch coordinator.phase {
             case .splash:
                 SplashView()
-                    .task {
-                        try? await Task.sleep(for: Self.splashDuration)
-                        coordinator.finishSplash()
-                    }
+                    .task { await coordinator.runSplash() }
             case .tabs:
                 TabBarView(coordinator: coordinator)
             }

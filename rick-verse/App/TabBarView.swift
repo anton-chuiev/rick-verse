@@ -12,30 +12,36 @@ struct TabBarView: View {
 
     var body: some View {
         TabView(selection: $coordinator.selectedTab) {
-            CharactersTab(coordinator: coordinator.characters)
-                .tabItem { tabLabel(.characters) }
-                .tag(AppCoordinator.Tab.characters)
+            Tab(AppCoordinator.Tab.characters.title,
+                systemImage: AppCoordinator.Tab.characters.systemImage,
+                value: .characters) {
+                CharactersTab(coordinator: coordinator.characters)
+            }
 
-            EpisodesTab(coordinator: coordinator.episodes)
-                .tabItem { tabLabel(.episodes) }
-                .tag(AppCoordinator.Tab.episodes)
+            Tab(AppCoordinator.Tab.episodes.title,
+                systemImage: AppCoordinator.Tab.episodes.systemImage,
+                value: .episodes) {
+                EpisodesTab(coordinator: coordinator.episodes)
+            }
 
-            LocationsTab(coordinator: coordinator.locations)
-                .tabItem { tabLabel(.locations) }
-                .tag(AppCoordinator.Tab.locations)
+            Tab(AppCoordinator.Tab.locations.title,
+                systemImage: AppCoordinator.Tab.locations.systemImage,
+                value: .locations) {
+                LocationsTab(coordinator: coordinator.locations)
+            }
 
-            FavoritesTab(coordinator: coordinator.favorites)
-                .tabItem { tabLabel(.favorites) }
-                .tag(AppCoordinator.Tab.favorites)
+            Tab(AppCoordinator.Tab.favorites.title,
+                systemImage: AppCoordinator.Tab.favorites.systemImage,
+                value: .favorites) {
+                FavoritesTab(coordinator: coordinator.favorites)
+            }
 
-            SettingsTab(coordinator: coordinator.settings)
-                .tabItem { tabLabel(.settings) }
-                .tag(AppCoordinator.Tab.settings)
+            Tab(AppCoordinator.Tab.settings.title,
+                systemImage: AppCoordinator.Tab.settings.systemImage,
+                value: .settings) {
+                SettingsTab(coordinator: coordinator.settings)
+            }
         }
-    }
-
-    private func tabLabel(_ tab: AppCoordinator.Tab) -> some View {
-        Label(tab.title, systemImage: tab.systemImage)
     }
 }
 

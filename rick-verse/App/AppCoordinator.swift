@@ -3,6 +3,7 @@
 //  rick-verse
 //
 
+import Foundation
 import Observation
 
 /// Root coordinator. Stays thin: owns splash → tabs routing, the selected tab,
@@ -34,9 +35,14 @@ final class AppCoordinator {
     let favorites = FavoritesCoordinator()
     let settings = SettingsCoordinator()
 
-    /// Leaves the splash screen and shows the tab bar. Called once the splash
-    /// has finished (currently just a short delay; warm-up logic comes later).
-    func finishSplash() {
+    /// How long the splash stays up before routing to the tabs. No warm-up
+    /// work happens yet — this is a placeholder duration.
+    private let splashDuration: Duration = .seconds(1.5)
+
+    /// Runs the splash phase, then routes to the tabs. Currently just a delay;
+    /// data/config warm-up will be added here as a separate feature.
+    func runSplash() async {
+        try? await Task.sleep(for: splashDuration)
         phase = .tabs
     }
 }
