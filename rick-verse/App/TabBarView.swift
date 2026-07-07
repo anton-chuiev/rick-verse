@@ -9,13 +9,14 @@ import SwiftUI
 /// coordinator and `NavigationStack`.
 struct TabBarView: View {
     @Bindable var coordinator: AppCoordinator
+    let container: AppContainer
 
     var body: some View {
         TabView(selection: $coordinator.selectedTab) {
             Tab(AppCoordinator.Tab.characters.title,
                 systemImage: AppCoordinator.Tab.characters.systemImage,
                 value: .characters) {
-                CharactersTab(coordinator: coordinator.characters)
+                CharactersTab(coordinator: coordinator.characters, container: container)
             }
 
             Tab(AppCoordinator.Tab.episodes.title,
@@ -46,5 +47,5 @@ struct TabBarView: View {
 }
 
 #Preview {
-    TabBarView(coordinator: AppCoordinator())
+    TabBarView(coordinator: AppCoordinator(), container: .live)
 }

@@ -9,6 +9,7 @@ import SwiftUI
 /// bar once `AppCoordinator` reports the splash is finished.
 struct AppShellView: View {
     @State private var coordinator = AppCoordinator()
+    private let container: AppContainer = .live
 
     var body: some View {
         Group {
@@ -17,7 +18,7 @@ struct AppShellView: View {
                 SplashView()
                     .task { await coordinator.runSplash() }
             case .tabs:
-                TabBarView(coordinator: coordinator)
+                TabBarView(coordinator: coordinator, container: container)
             }
         }
         .animation(.default, value: coordinator.phase)
