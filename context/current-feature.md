@@ -23,6 +23,8 @@ Completed
 ### 2026-07-07 — Tab Bar (App Shell) — Completed
 - App shell: `AppCoordinator` (splash→tabs), splash screen, 5-tab `TabView`, per-tab flow coordinator + `NavigationStack` with placeholder views
 - Centralized design tokens in `Presentation/Common/` (`AppColor`, `AppSpacing`, `Color(light:dark:)`)
+- Post-review fixes (swiftui-pro): migrated `TabView` to the `Tab(value:)` API; moved splash timing into `AppCoordinator.runSplash()`
+- Post-review fix (swift-concurrency-pro): `runSplash()` handles `CancellationError` — cancelled splash task no longer forces the transition
 
 ### 2026-07-06
 - Added `.gitignore`, removed `xcuserstate` from tracking
