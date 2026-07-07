@@ -42,7 +42,12 @@ final class AppCoordinator {
     /// Runs the splash phase, then routes to the tabs. Currently just a delay;
     /// data/config warm-up will be added here as a separate feature.
     func runSplash() async {
-        try? await Task.sleep(for: splashDuration)
+        do {
+            try await Task.sleep(for: splashDuration)
+        } catch {
+            // Cancelled (e.g. the splash view went away) — don't route.
+            return
+        }
         phase = .tabs
     }
 }
