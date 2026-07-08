@@ -144,7 +144,13 @@ final class CharactersListViewModel {
     private func performFirstPageLoad() async {
         generation += 1
         let token = generation
-        loadState = .loading
+        // Only show the full-screen skeleton when there's nothing on screen
+        // yet. A reload over an existing list (pull-to-refresh, filter, search)
+        // keeps the current content in place — the list is swapped in when the
+        // new page arrives — so it doesn't flash to skeleton and jump scroll.
+        if loadState != .loaded {
+            loadState = .loading
+        }
 
         let query = makeQuery(page: 1)
         do {
