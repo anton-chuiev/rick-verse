@@ -20,17 +20,11 @@ enum APIError: Error, Equatable {
     case transport
 }
 
-/// A request describing one endpoint call: a path relative to the base URL and
-/// optional query items.
-struct APIRequest {
-    let path: String
-    var queryItems: [URLQueryItem] = []
-}
-
 /// Generic networking client over `URLSession` + async/await. Knows nothing
-/// about characters — it builds URLs, performs requests, and decodes JSON.
+/// about characters — it builds a request from any `Endpoint`, performs it, and
+/// decodes the JSON response.
 protocol APIClient: Sendable {
-    func send<Response: Decodable>(_ request: APIRequest) async throws -> Response
+    func send<Response: Decodable>(_ endpoint: Endpoint) async throws -> Response
 }
 
 /// Default `APIClient` backed by `URLSession`.
@@ -51,15 +45,18 @@ struct URLSessionAPIClient: APIClient {
 
     static let rickAndMortyBaseURL = URL(string: "https://rickandmortyapi.com/api")!
 
-    func send<Response: Decodable>(_ request: APIRequest) async throws -> Response {
-        guard let url = makeURL(for: request) else {
+    func send<Response: Decodable>(_ endpoint: Endpoint) async throws -> Response {
+        let request: URLRequest
+        do {
+            request = try buildRequest(from: endpoint)
+        } catch {
             throw APIError.invalidURL
         }
 
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await session.data(from: url)
+            (data, response) = try await session.data(for: request)
         } catch {
             throw APIError.transport
         }
@@ -84,17 +81,46 @@ struct URLSessionAPIClient: APIClient {
         }
     }
 
-    private func makeURL(for request: APIRequest) -> URL? {
-        let path = request.path.hasPrefix("/") ? String(request.path.dropFirst()) : request.path
+    /// Builds a `URLRequest` from any endpoint: resolves the path against the
+    /// base URL, expands the endpoint's `Encodable` query parameters into query
+    /// items, and sets the HTTP method. Written once here so repositories never
+    /// assemble requests themselves.
+    private func buildRequest(from endpoint: Endpoint) throws -> URLRequest {
+        let path = endpoint.path.hasPrefix("/") ? String(endpoint.path.dropFirst()) : endpoint.path
         guard var components = URLComponents(
             url: baseURL.appendingPathComponent(path),
             resolvingAgainstBaseURL: false
         ) else {
-            return nil
+            throw APIError.invalidURL
         }
-        if !request.queryItems.isEmpty {
-            components.queryItems = request.queryItems
+
+        let queryParameters = try endpoint.queryParameters?.toDictionary() ?? [:]
+        if !queryParameters.isEmpty {
+            // Sorted for stable, readable URLs (dictionaries are unordered).
+            components.queryItems = queryParameters
+                .map { URLQueryItem(name: $0.key, value: "\($0.value)") }
+                .sorted { $0.name < $1.name }
         }
-        return components.url
+
+        guard let url = components.url else {
+            throw APIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = endpoint.method.rawValue
+        return request
+    }
+}
+
+// MARK: - Encodable → query dictionary
+
+private extension Encodable {
+    /// Flattens an `Encodable` value into `[String: Any]` via JSON, for use as
+    /// query parameters. `nil` optionals drop out, so absent parameters aren't
+    /// sent.
+    func toDictionary() throws -> [String: Any] {
+        let data = try JSONEncoder().encode(self)
+        let object = try JSONSerialization.jsonObject(with: data)
+        return object as? [String: Any] ?? [:]
     }
 }
