@@ -57,6 +57,11 @@ struct URLSessionAPIClient: APIClient {
         let response: URLResponse
         do {
             (data, response) = try await session.data(for: request)
+        } catch let error as URLError where error.code == .cancelled {
+            // The request was cancelled (e.g. the view went away). Surface it as
+            // cancellation, not a transport failure, so callers don't show an
+            // error state for a normal lifecycle event.
+            throw CancellationError()
         } catch {
             throw APIError.transport
         }

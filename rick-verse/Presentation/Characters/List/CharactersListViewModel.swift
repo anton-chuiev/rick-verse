@@ -148,7 +148,8 @@ final class CharactersListViewModel {
         // yet. A reload over an existing list (pull-to-refresh, filter, search)
         // keeps the current content in place — the list is swapped in when the
         // new page arrives — so it doesn't flash to skeleton and jump scroll.
-        if loadState != .loaded {
+        let isFirstLoad = loadState != .loaded
+        if isFirstLoad {
             loadState = .loading
         }
 
@@ -164,9 +165,18 @@ final class CharactersListViewModel {
             hasNextPage = page.hasNextPage
             loadState = page.characters.isEmpty ? .empty : .loaded
         } catch is CancellationError {
-            // Superseded by a newer load; leave state to the newer task.
-        } catch {
+            // Cancelled (superseded, or the view was covered/dismissed before
+            // the load finished). If this was the first load, reset to `.idle`
+            // so re-appearing re-triggers it — otherwise the screen would stay
+            // stuck on the skeleton. A reload over existing content keeps it.
             guard token == generation else { return }
+            if isFirstLoad {
+                loadState = .idle
+            }
+        } catch {
+            // A cancelled task must not surface as a failure — only a real error
+            // should. `token` staleness covers superseding loads.
+            guard token == generation, !Task.isCancelled else { return }
             characters = []
             totalCount = 0
             hasNextPage = false
