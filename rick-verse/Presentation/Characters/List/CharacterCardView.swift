@@ -14,11 +14,7 @@ struct CharacterCardView: View {
 
     var body: some View {
         HStack(spacing: AppSpacing.m) {
-            KFImage(character.imageURL)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 72, height: 72)
-                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            avatar
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(character.name)
@@ -52,6 +48,26 @@ struct CharacterCardView: View {
         .accessibilityLabel(
             "\(character.name), \(character.status.title), \(character.species), \(character.locationName)"
         )
+    }
+
+    /// Character thumbnail. A fixed-size placeholder holds the layout (and shows
+    /// during load), while `.fade` avoids a hard pop-in. `.retry` covers the API
+    /// rate-limiting (HTTP 429) that a fast scroll triggers: the burst of image
+    /// requests gets throttled, so failed loads are re-attempted with a short
+    /// backoff once the burst subsides. Concurrency is capped globally in
+    /// `KingfisherConfig` so the burst stays small in the first place.
+    private var avatar: some View {
+        KFImage(character.imageURL)
+            .placeholder {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(AppColor.textSecondary.opacity(0.15))
+            }
+            .retry(maxCount: 3, interval: .seconds(1))
+            .fade(duration: 0.2)
+            .resizable()
+            .scaledToFill()
+            .frame(width: 72, height: 72)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 
     private var statusLine: some View {
