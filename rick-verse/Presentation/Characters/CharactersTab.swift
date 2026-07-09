@@ -16,13 +16,24 @@ struct CharactersTab: View {
         NavigationStack(path: $coordinator.path) {
             CharactersListView(
                 viewModel: container.makeCharactersListViewModel(),
-                onSelect: { id in coordinator.showCharacterDetail(id: id) }
+                onSelect: { id in coordinator.showCharacterDetail(id: id) },
+                onShowFilters: coordinator.showFilters
             )
             .navigationDestination(for: CharactersCoordinator.Route.self) { route in
                 switch route {
                 case let .characterDetail(id):
                     CharacterDetailPlaceholderView(characterID: id)
                 }
+            }
+        }
+        // Present axis: modal sheets live alongside the push stack, driven by
+        // the coordinator's `presentedSheet`. `.presentationDetents` makes the
+        // filters sheet open at half height.
+        .sheet(item: $coordinator.presentedSheet) { sheet in
+            switch sheet {
+            case .filters:
+                CharacterFiltersPlaceholderView(onClose: coordinator.dismissSheet)
+                    .presentationDetents([.medium, .large])
             }
         }
     }

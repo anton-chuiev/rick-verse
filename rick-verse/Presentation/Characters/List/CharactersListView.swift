@@ -13,16 +13,20 @@ struct CharactersListView: View {
     /// Called when a card is tapped, with the character's id. The parent
     /// (coordinator-owned) view decides navigation.
     let onSelect: (Int) -> Void
+    /// Called when the filters button is tapped. The parent presents the sheet.
+    let onShowFilters: () -> Void
 
     /// Builds the view once, constructing its view model from the factory. The
     /// `@autoclosure` runs a single time (via `State(wrappedValue:)`) so parent
     /// re-renders don't discard and rebuild the view model.
     init(
         viewModel: @autoclosure () -> CharactersListViewModel,
-        onSelect: @escaping (Int) -> Void
+        onSelect: @escaping (Int) -> Void,
+        onShowFilters: @escaping () -> Void
     ) {
         _viewModel = State(wrappedValue: viewModel())
         self.onSelect = onSelect
+        self.onShowFilters = onShowFilters
     }
 
     var body: some View {
@@ -52,6 +56,7 @@ struct CharactersListView: View {
                 }
                 Spacer()
                 totalBadge
+                filtersButton
             }
 
             searchField
@@ -61,6 +66,14 @@ struct CharactersListView: View {
         .padding(.horizontal, AppSpacing.m)
         .padding(.top, AppSpacing.s)
         .padding(.bottom, AppSpacing.m)
+    }
+
+    /// Opens the filters sheet (present axis). Text label kept for VoiceOver.
+    private var filtersButton: some View {
+        Button("Filters", systemImage: "line.3.horizontal.decrease.circle", action: onShowFilters)
+            .labelStyle(.iconOnly)
+            .font(.title3)
+            .foregroundStyle(AppColor.textSecondary)
     }
 
     @ViewBuilder
@@ -150,3 +163,13 @@ struct CharactersListView: View {
         .refreshable { await viewModel.reload() }
     }
 }
+
+#if DEBUG
+#Preview {
+    CharactersListView(
+        viewModel: AppContainer.preview.makeCharactersListViewModel(),
+        onSelect: { _ in },
+        onShowFilters: {}
+    )
+}
+#endif
