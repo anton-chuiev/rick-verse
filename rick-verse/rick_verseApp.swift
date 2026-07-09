@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct rick_verseApp: App {
+    init() {
+        KingfisherConfig.apply()
+    }
+
     var body: some Scene {
         WindowGroup {
             AppShellView()
