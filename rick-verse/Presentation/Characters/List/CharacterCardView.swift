@@ -51,18 +51,18 @@ struct CharacterCardView: View {
     }
 
     /// Character thumbnail. A fixed-size placeholder holds the layout (and shows
-    /// during load), while `.fade` avoids a hard pop-in. `.retry` covers the API
-    /// rate-limiting (HTTP 429) that a fast scroll triggers: the burst of image
-    /// requests gets throttled, so failed loads are re-attempted with a short
-    /// backoff once the burst subsides. Concurrency is capped globally in
-    /// `KingfisherConfig` so the burst stays small in the first place.
+    /// during load), while `.fade` avoids a hard pop-in. Loads are deliberately
+    /// *not* retried here: the Rick and Morty API rate-limits (HTTP 429) under a
+    /// fast scroll, and a per-image retry would keep hammering it, sustaining the
+    /// throttle for every other card too. Instead concurrency is capped hard in
+    /// `KingfisherConfig` so the burst stays under the limit; a card that still
+    /// misses fills in from cache the next time it scrolls back on screen.
     private var avatar: some View {
         KFImage(character.imageURL)
             .placeholder {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(AppColor.textSecondary.opacity(0.15))
             }
-            .retry(maxCount: 3, interval: .seconds(1))
             .fade(duration: 0.2)
             .resizable()
             .scaledToFill()
