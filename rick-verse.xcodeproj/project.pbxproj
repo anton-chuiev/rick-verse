@@ -7,30 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F9E9C7842FFBBC4500024374 /* coding-standards.md in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C7802FFBBC4500024374 /* coding-standards.md */; };
-		F9E9C7852FFBBC4500024374 /* project-overview.md in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C7822FFBBC4500024374 /* project-overview.md */; };
-		F9E9C7862FFBBC4500024374 /* current-feature.md in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C7812FFBBC4500024374 /* current-feature.md */; };
-		F9E9C7872FFBBC4500024374 /* ai-interaction.md in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C77F2FFBBC4500024374 /* ai-interaction.md */; };
-		F9E9C78D2FFBD87000024374 /* characters-ui-dark.png in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C78B2FFBD87000024374 /* characters-ui-dark.png */; };
-		F9E9C78E2FFBD87000024374 /* characters-ui-light.png in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C78C2FFBD87000024374 /* characters-ui-light.png */; };
-		F9E9C7952FFC051000024374 /* tab-bar-spec.md in Resources */ = {isa = PBXBuildFile; fileRef = F9E9C7932FFC051000024374 /* tab-bar-spec.md */; };
+		F9E9C80C2FFD069300024374 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F9E9C80B2FFD069300024374 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		F9E9C76B2FF7DBF500024374 /* rick-verse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rick-verse.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F9E9C77F2FFBBC4500024374 /* ai-interaction.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "ai-interaction.md"; sourceTree = "<group>"; };
-		F9E9C7802FFBBC4500024374 /* coding-standards.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "coding-standards.md"; sourceTree = "<group>"; };
-		F9E9C7812FFBBC4500024374 /* current-feature.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "current-feature.md"; sourceTree = "<group>"; };
-		F9E9C7822FFBBC4500024374 /* project-overview.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "project-overview.md"; sourceTree = "<group>"; };
-		F9E9C78B2FFBD87000024374 /* characters-ui-dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "characters-ui-dark.png"; sourceTree = "<group>"; };
-		F9E9C78C2FFBD87000024374 /* characters-ui-light.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "characters-ui-light.png"; sourceTree = "<group>"; };
-		F9E9C7932FFC051000024374 /* tab-bar-spec.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "tab-bar-spec.md"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F9E9C76D2FF7DBF500024374 /* rick-verse */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "rick-verse";
+			sourceTree = "<group>";
+		};
+		F9E9C8012FFD052C00024374 /* context */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = context;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -40,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9E9C80C2FFD069300024374 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,7 +42,7 @@
 		F9E9C7622FF7DBF500024374 = {
 			isa = PBXGroup;
 			children = (
-				F9E9C7832FFBBC4500024374 /* context */,
+				F9E9C8012FFD052C00024374 /* context */,
 				F9E9C76D2FF7DBF500024374 /* rick-verse */,
 				F9E9C76C2FF7DBF500024374 /* Products */,
 			);
@@ -61,36 +54,6 @@
 				F9E9C76B2FF7DBF500024374 /* rick-verse.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F9E9C7832FFBBC4500024374 /* context */ = {
-			isa = PBXGroup;
-			children = (
-				F9E9C7942FFC051000024374 /* features */,
-				F9E9C7882FFBD6BD00024374 /* screenshots */,
-				F9E9C77F2FFBBC4500024374 /* ai-interaction.md */,
-				F9E9C7802FFBBC4500024374 /* coding-standards.md */,
-				F9E9C7812FFBBC4500024374 /* current-feature.md */,
-				F9E9C7822FFBBC4500024374 /* project-overview.md */,
-			);
-			path = context;
-			sourceTree = "<group>";
-		};
-		F9E9C7882FFBD6BD00024374 /* screenshots */ = {
-			isa = PBXGroup;
-			children = (
-				F9E9C78B2FFBD87000024374 /* characters-ui-dark.png */,
-				F9E9C78C2FFBD87000024374 /* characters-ui-light.png */,
-			);
-			path = screenshots;
-			sourceTree = "<group>";
-		};
-		F9E9C7942FFC051000024374 /* features */ = {
-			isa = PBXGroup;
-			children = (
-				F9E9C7932FFC051000024374 /* tab-bar-spec.md */,
-			);
-			path = features;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -110,9 +73,11 @@
 			);
 			fileSystemSynchronizedGroups = (
 				F9E9C76D2FF7DBF500024374 /* rick-verse */,
+				F9E9C8012FFD052C00024374 /* context */,
 			);
 			name = "rick-verse";
 			packageProductDependencies = (
+				F9E9C80B2FFD069300024374 /* Kingfisher */,
 			);
 			productName = "rick-verse";
 			productReference = F9E9C76B2FF7DBF500024374 /* rick-verse.app */;
@@ -142,6 +107,9 @@
 			);
 			mainGroup = F9E9C7622FF7DBF500024374;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F9E9C80A2FFD069300024374 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F9E9C76C2FF7DBF500024374 /* Products */;
 			projectDirPath = "";
@@ -157,13 +125,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F9E9C7842FFBBC4500024374 /* coding-standards.md in Resources */,
-				F9E9C7852FFBBC4500024374 /* project-overview.md in Resources */,
-				F9E9C7862FFBBC4500024374 /* current-feature.md in Resources */,
-				F9E9C78D2FFBD87000024374 /* characters-ui-dark.png in Resources */,
-				F9E9C78E2FFBD87000024374 /* characters-ui-light.png in Resources */,
-				F9E9C7872FFBBC4500024374 /* ai-interaction.md in Resources */,
-				F9E9C7952FFC051000024374 /* tab-bar-spec.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,12 +268,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -338,12 +296,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Config/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -383,6 +338,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F9E9C80A2FFD069300024374 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F9E9C80B2FFD069300024374 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F9E9C80A2FFD069300024374 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F9E9C7632FF7DBF500024374 /* Project object */;
 }
