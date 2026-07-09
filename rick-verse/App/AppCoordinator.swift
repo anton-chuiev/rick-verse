@@ -39,6 +39,10 @@ final class AppCoordinator {
     /// work happens yet — this is a placeholder duration.
     private let splashDuration: Duration = .seconds(1.5)
 
+    /// A deep link that arrived before the tabs were ready. Applied once the
+    /// splash finishes so navigation isn't set on a screen that isn't shown yet.
+    private var pendingDeepLink: DeepLink?
+
     /// Runs the splash phase, then routes to the tabs. Currently just a delay;
     /// data/config warm-up will be added here as a separate feature.
     func runSplash() async {
@@ -49,6 +53,40 @@ final class AppCoordinator {
             return
         }
         phase = .tabs
+
+        // Apply any link that arrived during the splash, now that the tabs
+        // exist to navigate.
+        if let link = pendingDeepLink {
+            pendingDeepLink = nil
+            apply(link)
+        }
+    }
+
+    // MARK: - Deep links
+
+    /// Entry point for an incoming deep link. This is the only place cross-flow
+    /// navigation is decided (like cross-tab navigation), so links funnel here.
+    /// During the splash the link is buffered and replayed once the tabs appear.
+    func handle(_ link: DeepLink) {
+        guard phase == .tabs else {
+            pendingDeepLink = link
+            return
+        }
+        apply(link)
+    }
+
+    /// Translates a deep-link intent into concrete navigation state: selects the
+    /// owning tab and sets that flow coordinator's stack. SwiftUI renders the
+    /// stack from the assigned value — no imperative screen-by-screen pushing.
+    private func apply(_ link: DeepLink) {
+        switch link {
+        case .charactersList:
+            selectedTab = .characters
+            characters.path = []
+        case let .characterDetail(id):
+            selectedTab = .characters
+            characters.path = [.characterDetail(id: id)]
+        }
     }
 }
 

@@ -28,6 +28,14 @@ struct AppShellView: View {
             }
         }
         .animation(.default, value: coordinator.phase)
+        // Deep-link entry point. Parses the incoming URL and hands the intent
+        // to the coordinator, which decides tab + navigation state (or buffers
+        // it until the splash finishes).
+        .onOpenURL { url in
+            if let link = DeepLink(url: url) {
+                coordinator.handle(link)
+            }
+        }
     }
 }
 
