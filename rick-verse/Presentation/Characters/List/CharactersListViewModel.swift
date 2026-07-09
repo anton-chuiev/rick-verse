@@ -153,9 +153,9 @@ final class CharactersListViewModel {
             loadState = .loading
         }
 
-        let query = makeQuery(page: 1)
+        let request = makeRequest(page: 1)
         do {
-            let page = try await fetchCharacters.execute(query)
+            let page = try await fetchCharacters.execute(request)
             // A newer load started while this one was in flight — drop it so an
             // out-of-order completion can't overwrite fresher results.
             guard token == generation else { return }
@@ -189,9 +189,9 @@ final class CharactersListViewModel {
         isLoadingNextPage = true
         defer { isLoadingNextPage = false }
 
-        let query = makeQuery(page: currentPage + 1)
+        let request = makeRequest(page: currentPage + 1)
         do {
-            let page = try await fetchCharacters.execute(query)
+            let page = try await fetchCharacters.execute(request)
             // A first-page reload happened mid-fetch — this page belongs to the
             // old query, so discard it.
             guard token == generation else { return }
@@ -205,9 +205,9 @@ final class CharactersListViewModel {
         }
     }
 
-    private func makeQuery(page: Int) -> CharacterQuery {
+    private func makeRequest(page: Int) -> CharactersRequest {
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        return CharacterQuery(
+        return CharactersRequest(
             page: page,
             name: trimmed.isEmpty ? nil : trimmed,
             status: statusFilter.status

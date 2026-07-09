@@ -13,17 +13,17 @@ import Foundation
 struct PreviewCharacterRepository: CharacterRepository {
     var characters: [RMCharacter] = PreviewCharacterRepository.sample
 
-    func characters(matching query: CharacterQuery) async throws -> CharacterPage {
+    func characters(matching request: CharactersRequest) async throws -> CharactersResponse {
         var filtered = characters
 
-        if let status = query.status {
+        if let status = request.status {
             filtered = filtered.filter { $0.status == status }
         }
-        if let name = query.name, !name.isEmpty {
+        if let name = request.name, !name.isEmpty {
             filtered = filtered.filter { $0.name.localizedCaseInsensitiveContains(name) }
         }
 
-        return CharacterPage(
+        return CharactersResponse(
             characters: filtered,
             totalCount: filtered.count,
             hasNextPage: false

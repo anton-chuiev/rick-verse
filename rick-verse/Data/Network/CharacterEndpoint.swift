@@ -8,7 +8,7 @@
 /// the `APIClient`.
 enum CharacterEndpoint: Endpoint {
     /// `GET /character` — a paged, filtered list.
-    case list(CharacterQuery)
+    case list(CharactersRequest)
 
     var path: String {
         switch self {
@@ -18,24 +18,24 @@ enum CharacterEndpoint: Endpoint {
 
     var queryParameters: Encodable? {
         switch self {
-        case let .list(query): CharacterListParameters(query)
+        case let .list(request): CharactersRequestDTO(request)
         }
     }
 }
 
 /// Query parameters for `GET /character`, encoded to the API's `page` / `name`
 /// / `status` params. `nil` fields drop out during encoding, so absent filters
-/// aren't sent. Lives in the Data layer so the domain `CharacterQuery` stays
+/// aren't sent. Lives in the Data layer so the domain `CharactersRequest` stays
 /// free of networking concerns.
-private struct CharacterListParameters: Encodable {
+private struct CharactersRequestDTO: Encodable {
     let page: Int
     let name: String?
     let status: String?
 
-    init(_ query: CharacterQuery) {
-        self.page = query.page
-        self.name = query.name.flatMap { $0.isEmpty ? nil : $0 }
-        self.status = query.status?.apiValue
+    init(_ request: CharactersRequest) {
+        self.page = request.page
+        self.name = request.name.flatMap { $0.isEmpty ? nil : $0 }
+        self.status = request.status?.apiValue
     }
 }
 

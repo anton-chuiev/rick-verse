@@ -38,7 +38,7 @@ struct PageInfoDTO: Decodable {
 }
 
 /// Wire model for a paginated `GET /character` response: `info` + `results`.
-struct CharacterPageDTO: Decodable {
+struct CharactersResponseDTO: Decodable {
     let info: PageInfoDTO
     let results: [CharacterDTO]
 }
