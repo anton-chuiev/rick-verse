@@ -76,8 +76,18 @@ final class CharactersListViewModel {
     private let fetchCharacters: FetchCharactersUseCase
     private let searchDebounce: Duration
 
+    /// Whether the API reported another page after the current one. Drives the
+    /// list footer: the view shows a loading sentinel while this is true, and
+    /// that sentinel is what triggers the next page.
+    private(set) var hasNextPage = false
+
+    /// Changes every time a next-page attempt finishes. The footer sentinel
+    /// keys its `.task` on this, so a *failed* attempt (e.g. the API's HTTP 429
+    /// rate limit) re-arms the trigger and the still-visible sentinel retries —
+    /// instead of getting stuck until the user scrolls to recreate the row.
+    private(set) var paginationToken = 0
+
     private var currentPage = 1
-    private var hasNextPage = false
     /// The in-flight first-page load (debounced search, filter change, or
     /// pull-to-refresh). Stored so a newer request cancels the previous one.
     private var reloadTask: Task<Void, Never>?
@@ -107,12 +117,14 @@ final class CharactersListViewModel {
         await performFirstPageLoad()
     }
 
-    /// Called by the view as rows appear; triggers the next page when the user
-    /// nears the end of the loaded list.
-    func onRowAppear(_ character: RMCharacter) async {
-        guard let index = characters.firstIndex(of: character) else { return }
-        let thresholdCrossed = index >= characters.count - Self.prefetchDistance
-        guard thresholdCrossed, hasNextPage, !isLoadingNextPage else { return }
+    /// Loads the next page when the list's end sentinel becomes visible. Called
+    /// from the footer's `.task(id: characters.count)`, so it re-fires every time
+    /// the list grows — the sentinel reappears under the new last row. This is
+    /// state-driven ("the end is on screen") rather than event-driven ("a row
+    /// appeared once"), so it can't get stuck if a trigger is missed while a
+    /// load is already in flight.
+    func loadNextPageIfNeeded() async {
+        guard hasNextPage, !isLoadingNextPage else { return }
         await loadNextPage()
     }
 
@@ -187,7 +199,16 @@ final class CharactersListViewModel {
     private func loadNextPage() async {
         let token = generation
         isLoadingNextPage = true
-        defer { isLoadingNextPage = false }
+        // Bumping the pagination token re-arms the footer sentinel's `.task`,
+        // whether the load succeeds (list grew, sentinel moved down under the
+        // new last row) or fails (sentinel still on screen, needs to retry).
+        // Done on every exit so pagination can never silently stall.
+        defer {
+            isLoadingNextPage = false
+            if token == generation {
+                paginationToken += 1
+            }
+        }
 
         let request = makeRequest(page: currentPage + 1)
         do {
@@ -199,9 +220,14 @@ final class CharactersListViewModel {
             totalCount = page.totalCount
             currentPage += 1
             hasNextPage = page.hasNextPage
+        } catch is CancellationError {
+            // Superseded or the view went away — leave state as-is.
         } catch {
-            // A page-N failure keeps already-loaded items and lets the user
-            // try again by scrolling; it must not blow away the list.
+            // A page-N failure (typically the API's HTTP 429 rate limit under a
+            // fast scroll) keeps already-loaded items. Back off briefly so the
+            // sentinel's re-armed `.task` doesn't hammer the API immediately.
+            guard token == generation else { return }
+            try? await Task.sleep(for: .seconds(1))
         }
     }
 
@@ -213,7 +239,4 @@ final class CharactersListViewModel {
             status: statusFilter.status
         )
     }
-
-    /// How many rows from the end triggers a prefetch of the next page.
-    private static let prefetchDistance = 5
 }

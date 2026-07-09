@@ -150,12 +150,22 @@ struct CharactersListView: View {
                         CharacterCardView(character: character)
                     }
                     .buttonStyle(.plain)
-                    .task { await viewModel.onRowAppear(character) }
                 }
 
-                if viewModel.isLoadingNextPage {
+                if viewModel.hasNextPage {
+                    // End-of-list sentinel. It sits below the last row, so it
+                    // only becomes visible when the user reaches the bottom, and
+                    // its `.task` re-runs whenever `paginationToken` changes —
+                    // which happens after every load attempt, success or fail.
+                    // That makes it self-healing: a failed page (API rate limit)
+                    // re-arms the trigger and this still-visible sentinel retries,
+                    // instead of stalling until the user scrolls to recreate it.
                     ProgressView()
                         .padding(.vertical, AppSpacing.m)
+                        .frame(maxWidth: .infinity)
+                        .task(id: viewModel.paginationToken) {
+                            await viewModel.loadNextPageIfNeeded()
+                        }
                 }
             }
             .padding(AppSpacing.m)
