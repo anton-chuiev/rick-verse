@@ -25,11 +25,6 @@
 			path = context;
 			sourceTree = "<group>";
 		};
-		F9E9CB1F30079BAD00024374 /* .claude */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = .claude;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,7 +42,6 @@
 		F9E9C7622FF7DBF500024374 = {
 			isa = PBXGroup;
 			children = (
-				F9E9CB1F30079BAD00024374 /* .claude */,
 				F9E9C8012FFD052C00024374 /* context */,
 				F9E9C76D2FF7DBF500024374 /* rick-verse */,
 				F9E9C76C2FF7DBF500024374 /* Products */,
@@ -80,7 +74,6 @@
 			fileSystemSynchronizedGroups = (
 				F9E9C76D2FF7DBF500024374 /* rick-verse */,
 				F9E9C8012FFD052C00024374 /* context */,
-				F9E9CB1F30079BAD00024374 /* .claude */,
 			);
 			name = "rick-verse";
 			packageProductDependencies = (

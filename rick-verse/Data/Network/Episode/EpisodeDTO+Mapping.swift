@@ -19,7 +19,7 @@ extension EpisodeDTO {
 
     /// Extracts the trailing integer ID from a resource URL such as
     /// `https://rickandmortyapi.com/api/character/42` → `42`.
-    private static func trailingID(from urlString: String) -> Int? {
+    private static nonisolated func trailingID(from urlString: String) -> Int? {
         Int(urlString.split(separator: "/").last ?? "")
     }
 }

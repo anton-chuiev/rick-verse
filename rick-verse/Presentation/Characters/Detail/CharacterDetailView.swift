@@ -3,7 +3,6 @@
 //  rick-verse
 //
 
-import Kingfisher
 import SwiftUI
 
 /// Character Detail screen: an edge-to-edge hero image with the name and status
