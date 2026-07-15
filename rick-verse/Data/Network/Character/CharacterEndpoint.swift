@@ -9,16 +9,20 @@
 enum CharacterEndpoint: Endpoint {
     /// `GET /character` — a paged, filtered list.
     case list(CharactersRequest)
+    /// `GET /character/{id}` — a single character, no query parameters.
+    case detail(id: Int)
 
     var path: String {
         switch self {
         case .list: "character"
+        case let .detail(id): "character/\(id)"
         }
     }
 
     var queryParameters: Encodable? {
         switch self {
         case let .list(request): CharactersRequestDTO(request)
+        case .detail: nil
         }
     }
 }

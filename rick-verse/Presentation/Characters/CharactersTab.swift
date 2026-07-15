@@ -22,7 +22,9 @@ struct CharactersTab: View {
             .navigationDestination(for: CharactersCoordinator.Route.self) { route in
                 switch route {
                 case let .characterDetail(id):
-                    CharacterDetailPlaceholderView(characterID: id)
+                    CharacterDetailView(
+                        viewModel: container.makeCharacterDetailViewModel(id: id)
+                    )
                 }
             }
         }
