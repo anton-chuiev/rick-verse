@@ -65,3 +65,9 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
+# Claude Code
+#
+# Shared skills/agents/commands under .claude/ are tracked; personal local
+# overrides are not.
+.claude/settings.local.json
+
