@@ -124,7 +124,10 @@ extension RMCharacter.Status {
             species: "Human",
             imageURL: URL(string: "https://rickandmortyapi.com/api/character/avatar/1.jpeg"),
             episodeIDs: [1, 2, 3],
-            locationName: "Citadel of Ricks"
+            locationName: "Citadel of Ricks",
+            gender: "Male",
+            type: "",
+            originName: "Earth (C-137)"
         )
     )
     .padding()

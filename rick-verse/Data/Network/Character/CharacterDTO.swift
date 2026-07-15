@@ -6,8 +6,8 @@
 import Foundation
 
 /// Wire model for a single character, mirroring the Rick and Morty API JSON.
-/// Fields not carried into the domain for this feature (`type`, `gender`,
-/// `origin`, `url`, `created`) are still decoded so decoding stays strict.
+/// `url` and `created` aren't carried into the domain, but are still decoded so
+/// decoding stays strict.
 struct CharacterDTO: Decodable {
     let id: Int
     let name: String

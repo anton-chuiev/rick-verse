@@ -7,8 +7,10 @@ import Foundation
 import Observation
 
 /// Drives the Characters list screen: loading, paging, search, and status
-/// filtering. Depends only on the `FetchCharactersUseCase` protocol so it can
-/// be unit-tested with a trivial mock.
+/// filtering. Depends only on the `CharactersRepository` protocol so it can be
+/// unit-tested with a trivial mock. Fetching a page is a single repository call
+/// with no orchestration, so per the Use Case Convention the view model talks to
+/// the repository directly rather than through a pass-through use case.
 @Observable
 @MainActor
 final class CharactersListViewModel {
@@ -73,7 +75,7 @@ final class CharactersListViewModel {
         }
     }
 
-    private let fetchCharacters: FetchCharactersUseCase
+    private let repository: CharactersRepository
     private let searchDebounce: Duration
 
     /// Whether the API reported another page after the current one. Drives the
@@ -97,10 +99,10 @@ final class CharactersListViewModel {
     private var generation = 0
 
     init(
-        fetchCharacters: FetchCharactersUseCase,
+        repository: CharactersRepository,
         searchDebounce: Duration = .milliseconds(300)
     ) {
-        self.fetchCharacters = fetchCharacters
+        self.repository = repository
         self.searchDebounce = searchDebounce
     }
 
@@ -167,7 +169,7 @@ final class CharactersListViewModel {
 
         let request = makeRequest(page: 1)
         do {
-            let page = try await fetchCharacters.execute(request)
+            let page = try await repository.characters(matching: request)
             // A newer load started while this one was in flight — drop it so an
             // out-of-order completion can't overwrite fresher results.
             guard token == generation else { return }
@@ -212,7 +214,7 @@ final class CharactersListViewModel {
 
         let request = makeRequest(page: currentPage + 1)
         do {
-            let page = try await fetchCharacters.execute(request)
+            let page = try await repository.characters(matching: request)
             // A first-page reload happened mid-fetch — this page belongs to the
             // old query, so discard it.
             guard token == generation else { return }

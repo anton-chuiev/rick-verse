@@ -8,8 +8,9 @@ import Foundation
 extension CharacterDTO {
     /// Maps this wire model to the domain `RMCharacter`. `status` becomes a
     /// case-insensitive `Status`, `location.name` becomes `locationName`,
-    /// `image` becomes `imageURL`, and each `episode` URL's trailing ID is
-    /// parsed into `episodeIDs`.
+    /// `origin.name` becomes `originName`, `image` becomes `imageURL`, and each
+    /// `episode` URL's trailing ID is parsed into `episodeIDs`. `created` and
+    /// `url` stay DTO-only.
     func toDomain() -> RMCharacter {
         RMCharacter(
             id: id,
@@ -18,7 +19,10 @@ extension CharacterDTO {
             species: species,
             imageURL: URL(string: image),
             episodeIDs: episode.compactMap(Self.trailingID(from:)),
-            locationName: location.name
+            locationName: location.name,
+            gender: gender,
+            type: type,
+            originName: origin.name
         )
     }
 

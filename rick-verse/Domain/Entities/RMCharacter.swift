@@ -16,6 +16,12 @@ struct RMCharacter: Identifiable, Equatable {
     let imageURL: URL?
     let episodeIDs: [Int]
     let locationName: String
+    /// Detail-only fields — the list doesn't display them, but the same entity
+    /// serves both screens (no parallel detail entity). `type` is often an empty
+    /// string; the detail screen shows "—" in that case.
+    let gender: String
+    let type: String
+    let originName: String
 }
 
 extension RMCharacter {

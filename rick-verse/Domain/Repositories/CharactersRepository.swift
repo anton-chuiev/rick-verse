@@ -1,5 +1,5 @@
 //
-//  CharacterRepository.swift
+//  CharactersRepository.swift
 //  rick-verse
 //
 
@@ -21,7 +21,7 @@ struct CharactersResponse: Equatable {
 
 /// Read access to characters. Implemented in the Data layer; consumed by use
 /// cases in the Domain layer.
-protocol CharacterRepository: Sendable {
+protocol CharactersRepository: Sendable {
     /// Fetches one page of characters matching `request`. A no-results response
     /// (API 404) maps to an empty page, not an error.
     func characters(matching request: CharactersRequest) async throws -> CharactersResponse

@@ -1,12 +1,12 @@
 //
-//  DefaultCharacterRepository.swift
+//  DefaultCharactersRepository.swift
 //  rick-verse
 //
 
-/// `CharacterRepository` backed by the Rick and Morty API via ``APIClient``.
+/// `CharactersRepository` backed by the Rick and Morty API via ``APIClient``.
 /// Builds the `/character` endpoint from a `CharactersRequest`, maps DTOs to
 /// domain, and turns the API's 404 "no results" into an empty page.
-struct DefaultCharacterRepository: CharacterRepository {
+struct DefaultCharactersRepository: CharactersRepository {
     let apiClient: APIClient
 
     func characters(matching request: CharactersRequest) async throws -> CharactersResponse {

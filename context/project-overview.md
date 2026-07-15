@@ -181,11 +181,16 @@ RickVerse/
 │   ├── UseCases/                 # protocol + Default impl, one file each
 │   └── Repositories/             # protocols only
 ├── Data/
-│   ├── Network/                  # APIClient, endpoints, DTOs + mappers
+│   ├── Network/
+│   │   ├── Core/                 # APIClient, Endpoint, HTTPMethod — resource-agnostic transport
+│   │   ├── Character/            # CharacterDTO (+ Mapping), CharacterEndpoint
+│   │   └── Episode/              # EpisodeDTO (+ Mapping), EpisodeEndpoint
 │   ├── Persistence/              # SwiftData stack, FavoriteCharacter
 │   └── Repositories/             # protocol implementations
 └── Resources/                    # assets, Info.plist
 ```
+
+`Data/Network/` is grouped one folder per API resource (`Character/`, `Episode/`, …), each holding that resource's DTO + mapping + endpoint, with shared transport in `Core/`. New resources (e.g. `Location/`) add a folder rather than more files in a flat directory.
 
 ### Use Case Convention
 
@@ -193,6 +198,13 @@ RickVerse/
 - Protocol and its default implementation live in **one file**: `Domain/UseCases/FetchCharactersUseCase.swift` contains `protocol FetchCharactersUseCase` + `struct DefaultFetchCharactersUseCase`.
 - Keep protocols narrow: a single `execute` method per use case.
 - Don't create a use case when there is no orchestration — trivial pass-throughs may call the repository directly. A use case earns its place when it composes logic (e.g. batch episode fetch `/episode/1,2,3` on top of the repository).
+- Guardrail for the direct-repository shortcut: it applies **only** to a single call to a single repository with no post-processing. The moment a flow needs a second data source, mapping/derivation, caching, or a business rule, introduce a use case — the ViewModel depends on a protocol either way, so the swap is one init parameter.
+
+### Repository Convention
+
+- Repository methods take a domain `…Request` struct and return a `…Response` struct — never bare scalars (`Int`, `String`) or raw tuples: `characters(matching: CharactersRequest) -> CharactersResponse`, `character(matching: CharacterDetailRequest) -> CharacterDetailResponse`.
+- `…Request`/`…Response` are plain domain structs living next to the repository protocol in `Domain/Repositories/`; adding a parameter later extends the struct without breaking the protocol signature.
+- Name repositories after the resource they serve, avoiding near-collisions: the paginated list lives in `CharactersRepository`, the single-character fetch in `CharacterDetailRepository` (not `CharacterRepository`, which differs from the list by one letter).
 
 ### Coordinator Convention
 
