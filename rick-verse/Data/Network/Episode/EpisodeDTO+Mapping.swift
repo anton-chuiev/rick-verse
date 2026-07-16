@@ -13,13 +13,7 @@ extension EpisodeDTO {
             name: name,
             airDate: airDate,
             episodeCode: episodeCode,
-            characterIDs: characters.compactMap(Self.trailingID(from:))
+            characterIDs: characters.compactMap(ResourceURL.trailingID(from:))
         )
-    }
-
-    /// Extracts the trailing integer ID from a resource URL such as
-    /// `https://rickandmortyapi.com/api/character/42` → `42`.
-    private static nonisolated func trailingID(from urlString: String) -> Int? {
-        Int(urlString.split(separator: "/").last ?? "")
     }
 }

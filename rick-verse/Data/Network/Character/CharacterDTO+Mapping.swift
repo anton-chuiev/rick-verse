@@ -18,17 +18,11 @@ extension CharacterDTO {
             status: RMCharacter.Status(apiValue: status),
             species: species,
             imageURL: URL(string: image),
-            episodeIDs: episode.compactMap(Self.trailingID(from:)),
+            episodeIDs: episode.compactMap(ResourceURL.trailingID(from:)),
             locationName: location.name,
             gender: gender,
             type: type,
             originName: origin.name
         )
-    }
-
-    /// Extracts the trailing integer ID from a resource URL such as
-    /// `https://rickandmortyapi.com/api/episode/42` → `42`.
-    private static nonisolated func trailingID(from urlString: String) -> Int? {
-        Int(urlString.split(separator: "/").last ?? "")
     }
 }
