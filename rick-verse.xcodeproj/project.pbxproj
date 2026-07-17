@@ -15,6 +15,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		F9BC94D6300A31AB00753CF3 /* docs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = docs;
+			sourceTree = "<group>";
+		};
 		F9E9C76D2FF7DBF500024374 /* rick-verse */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "rick-verse";
@@ -42,6 +47,7 @@
 		F9E9C7622FF7DBF500024374 = {
 			isa = PBXGroup;
 			children = (
+				F9BC94D6300A31AB00753CF3 /* docs */,
 				F9E9C8012FFD052C00024374 /* context */,
 				F9E9C76D2FF7DBF500024374 /* rick-verse */,
 				F9E9C76C2FF7DBF500024374 /* Products */,
@@ -72,6 +78,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				F9BC94D6300A31AB00753CF3 /* docs */,
 				F9E9C76D2FF7DBF500024374 /* rick-verse */,
 				F9E9C8012FFD052C00024374 /* context */,
 			);
