@@ -10,7 +10,18 @@
 		F9E9C80C2FFD069300024374 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F9E9C80B2FFD069300024374 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		F9BC94EE300A379100753CF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F9E9C7632FF7DBF500024374 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9E9C76A2FF7DBF500024374;
+			remoteInfo = "rick-verse";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		F9BC94EA300A379100753CF3 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9E9C76B2FF7DBF500024374 /* rick-verse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rick-verse.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -18,6 +29,11 @@
 		F9BC94D6300A31AB00753CF3 /* docs */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = docs;
+			sourceTree = "<group>";
+		};
+		F9BC94EB300A379100753CF3 /* Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		F9E9C76D2FF7DBF500024374 /* rick-verse */ = {
@@ -33,6 +49,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F9BC94E7300A379100753CF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F9E9C7682FF7DBF500024374 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -50,6 +73,7 @@
 				F9BC94D6300A31AB00753CF3 /* docs */,
 				F9E9C8012FFD052C00024374 /* context */,
 				F9E9C76D2FF7DBF500024374 /* rick-verse */,
+				F9BC94EB300A379100753CF3 /* Tests */,
 				F9E9C76C2FF7DBF500024374 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -58,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				F9E9C76B2FF7DBF500024374 /* rick-verse.app */,
+				F9BC94EA300A379100753CF3 /* Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -65,6 +90,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		F9BC94E9300A379100753CF3 /* Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F9BC94F0300A379100753CF3 /* Build configuration list for PBXNativeTarget "Tests" */;
+			buildPhases = (
+				F9BC94E6300A379100753CF3 /* Sources */,
+				F9BC94E7300A379100753CF3 /* Frameworks */,
+				F9BC94E8300A379100753CF3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F9BC94EF300A379100753CF3 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F9BC94EB300A379100753CF3 /* Tests */,
+			);
+			name = Tests;
+			packageProductDependencies = (
+			);
+			productName = Tests;
+			productReference = F9BC94EA300A379100753CF3 /* Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F9E9C76A2FF7DBF500024374 /* rick-verse */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F9E9C7762FF7DBF700024374 /* Build configuration list for PBXNativeTarget "rick-verse" */;
@@ -100,6 +148,10 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					F9BC94E9300A379100753CF3 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = F9E9C76A2FF7DBF500024374;
+					};
 					F9E9C76A2FF7DBF500024374 = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -123,11 +175,19 @@
 			projectRoot = "";
 			targets = (
 				F9E9C76A2FF7DBF500024374 /* rick-verse */,
+				F9BC94E9300A379100753CF3 /* Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F9BC94E8300A379100753CF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F9E9C7692FF7DBF500024374 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -138,6 +198,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F9BC94E6300A379100753CF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F9E9C7672FF7DBF500024374 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -147,7 +214,57 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		F9BC94EF300A379100753CF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9E9C76A2FF7DBF500024374 /* rick-verse */;
+			targetProxy = F9BC94EE300A379100753CF3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		F9BC94F1300A379100753CF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D74D28AMNN;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anton.chuiev.Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/rick-verse.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/rick-verse";
+			};
+			name = Debug;
+		};
+		F9BC94F2300A379100753CF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = D74D28AMNN;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.anton.chuiev.Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/rick-verse.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/rick-verse";
+			};
+			name = Release;
+		};
 		F9E9C7742FF7DBF700024374 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -326,6 +443,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F9BC94F0300A379100753CF3 /* Build configuration list for PBXNativeTarget "Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F9BC94F1300A379100753CF3 /* Debug */,
+				F9BC94F2300A379100753CF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F9E9C7662FF7DBF500024374 /* Build configuration list for PBXProject "rick-verse" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
