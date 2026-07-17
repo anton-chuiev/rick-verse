@@ -15,7 +15,7 @@ This is the common workflow that we will use for every single feature/fix:
 1. **Document** - Document the feature in @context/current-feature.md.
 2. **Branch** - Create new branch for feature, fix, etc
 3. **Implement** - Implement the feature/fix that I create in @context/current-feature.md
-4. **Test** - Verify it works by building the project and fix any errors. Implement unit testing later.
+4. **Test** - Verify it works by building the project and fix any errors, then cover the feature's logic with unit tests (see Testing below).
 5. **Iterate** - Iterate and change things if needed
 6. **Commit** - Only after build passes and everything works
 7. **Merge** - Merge to main
@@ -35,6 +35,20 @@ We will create a new branch for every feature/fix. Name branch **feature/[featur
 - Use conventional commit messages (feat:, fix:, chore:, etc.)
 - Keep commits focused (one feature/fix per commit)
 - Never put "Generated With Claude" in the commit messages
+
+## Testing
+
+Unit tests are part of a feature, not a follow-up. A feature isn't done until its logic is covered.
+
+**What to test — logic, not wiring.** Cover view models (state transitions, race guarding, debounce, cancellation-vs-error), DTO → domain mapping, and repositories (especially where they absorb an API quirk, like a 404 meaning "no results"). Skip anything with no logic to protect: SwiftUI views, design tokens, coordinators without routing logic, and pass-through use cases. A test that only restates a constant or a one-line forward is noise.
+
+**Mock at the protocol seam.** View models depend on repository (or use case) protocols; repositories depend on the `APIClient` protocol — mock those, never the network. Stub the API client with real wire JSON so DTO decoding is exercised too, rather than hand-building DTOs. If a seam doesn't exist yet, say so before adding one — don't reshape production code to suit a test without asking.
+
+**Determinism is non-negotiable.** No network, no dependence on the wall clock. Drive timing through injected values (e.g. the debounce interval) and by releasing mocked calls explicitly — never by sleeping and hoping.
+
+**Conventions.** Swift Testing (`@Test`, `#expect`). Tests mirror the app's layer-first structure under `Tests/`, with shared mocks in `Tests/Mocks/`. One behavior per test, named for the behavior rather than the method. Assert on observable state and recorded calls, never private internals.
+
+**A test that resists being written cleanly is a finding about the production code.** Report it — don't contort the test around it, and don't silently "fix" the code.
 
 ## When Stuck
 
