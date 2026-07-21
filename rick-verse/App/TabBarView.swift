@@ -28,7 +28,7 @@ struct TabBarView: View {
             Tab(AppCoordinator.Tab.locations.title,
                 systemImage: AppCoordinator.Tab.locations.systemImage,
                 value: .locations) {
-                LocationsTab(coordinator: coordinator.locations)
+                LocationsTab(coordinator: coordinator.locations, container: container)
             }
 
             Tab(AppCoordinator.Tab.favorites.title,

@@ -13,6 +13,7 @@ struct AppContainer {
     let characterDetailRepository: CharacterDetailRepository
     let episodeBatchRepository: EpisodeBatchRepository
     let episodesRepository: EpisodesRepository
+    let locationsRepository: LocationsRepository
 
     /// The live container: real repositories backed by the Rick and Morty API
     /// over a shared `URLSession` client.
@@ -22,7 +23,8 @@ struct AppContainer {
             charactersRepository: DefaultCharactersRepository(apiClient: apiClient),
             characterDetailRepository: DefaultCharacterDetailRepository(apiClient: apiClient),
             episodeBatchRepository: DefaultEpisodeBatchRepository(apiClient: apiClient),
-            episodesRepository: DefaultEpisodesRepository(apiClient: apiClient)
+            episodesRepository: DefaultEpisodesRepository(apiClient: apiClient),
+            locationsRepository: DefaultLocationsRepository(apiClient: apiClient)
         )
     }()
 
@@ -33,7 +35,8 @@ struct AppContainer {
         charactersRepository: PreviewCharactersRepository(),
         characterDetailRepository: PreviewCharacterDetailRepository(),
         episodeBatchRepository: PreviewEpisodeBatchRepository(),
-        episodesRepository: PreviewEpisodesRepository()
+        episodesRepository: PreviewEpisodesRepository(),
+        locationsRepository: PreviewLocationsRepository()
     )
     #endif
 
@@ -56,5 +59,10 @@ struct AppContainer {
         EpisodesListViewModel(
             fetchAllEpisodes: DefaultFetchAllEpisodesUseCase(repository: episodesRepository)
         )
+    }
+
+    @MainActor
+    func makeLocationsListViewModel() -> LocationsListViewModel {
+        LocationsListViewModel(repository: locationsRepository)
     }
 }
