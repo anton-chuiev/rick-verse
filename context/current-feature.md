@@ -24,6 +24,13 @@ Not Started
      then a `Details:` link to the spec. Full detail lives in the spec, not here.
      Minor milestones (setup, chore) get a single line, no bullets. -->
 
+### 2026-07-21 — Favorites — Completed
+Fifth slice and the project's first SwiftData layer — offline-capable favorites; toggle from Characters list + Character Detail, a new Favorites tab (newest-first, swipe-to-remove) that pushes Detail within its own stack.
+- Cross-screen live updates via one shared `@Observable FavoritesStore` in the environment — `toggle` moves `favoriteIDs` (hearts) and `favorites` (list) together, optimistic with revert
+- `DefaultFavoritesRepository` holds the `ModelContainer` (not a bare `ModelContext`) — a context doesn't retain its container, which was crashing tests; owning the container is Apple's documented practice. Tests surfaced two real bugs (this + `dateAdded` dropped in the model init)
+- Removal shipped as swipe-only (spec said swipe/heart-tap); the Favorites card heart was dropped per request
+- Details: `context/features/favorites-spec.md`
+
 ### 2026-07-21 — Episodes List — Completed
 Third vertical slice — all episodes grouped by season; new paginated `/episode` stack alongside the existing by-ID batch stack.
 - Load-all (no UI pagination): `FetchAllEpisodesUseCase` walks pages sequentially into a flat list; season grouping (parsing `S0xE0y`) lives in the view model
