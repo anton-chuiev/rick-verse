@@ -22,7 +22,7 @@ struct TabBarView: View {
             Tab(AppCoordinator.Tab.episodes.title,
                 systemImage: AppCoordinator.Tab.episodes.systemImage,
                 value: .episodes) {
-                EpisodesTab(coordinator: coordinator.episodes)
+                EpisodesTab(coordinator: coordinator.episodes, container: container)
             }
 
             Tab(AppCoordinator.Tab.locations.title,

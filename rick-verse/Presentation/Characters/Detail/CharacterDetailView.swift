@@ -131,7 +131,7 @@ struct CharacterDetailView: View {
             viewModel: CharacterDetailViewModel(
                 characterID: 1,
                 repository: PreviewCharacterDetailRepository(error: APIError.notFound),
-                fetchEpisodes: DefaultFetchEpisodesUseCase(repository: PreviewEpisodeRepository())
+                fetchEpisodes: DefaultFetchEpisodeBatchUseCase(repository: PreviewEpisodeBatchRepository())
             )
         )
     }

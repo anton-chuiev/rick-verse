@@ -81,9 +81,9 @@ struct EpisodeRowSkeleton: View {
 
 #Preview {
     EpisodesSection(title: "EPISODES · 2") {
-        EpisodeRow(episode: PreviewEpisodeRepository.sample[0])
+        EpisodeRow(episode: PreviewEpisodeBatchRepository.sample[0])
         Divider()
-        EpisodeRow(episode: PreviewEpisodeRepository.sample[1])
+        EpisodeRow(episode: PreviewEpisodeBatchRepository.sample[1])
         Divider()
         EpisodeRowSkeleton()
     }

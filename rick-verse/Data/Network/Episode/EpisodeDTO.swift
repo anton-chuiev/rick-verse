@@ -26,3 +26,11 @@ struct EpisodeDTO: Decodable {
         case episodeCode = "episode"
     }
 }
+
+/// Wire model for a paginated `GET /episode` response: `info` + `results`.
+/// Reuses `PageInfoDTO` (declared with the character DTOs) — the `info` block is
+/// identical across the API's list endpoints.
+struct EpisodesResponseDTO: Decodable {
+    let info: PageInfoDTO
+    let results: [EpisodeDTO]
+}
