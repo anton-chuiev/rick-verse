@@ -11,6 +11,7 @@ import SwiftUI
 /// in independently.
 struct CharacterDetailView: View {
     @State private var viewModel: CharacterDetailViewModel
+    @Environment(FavoritesStore.self) private var favorites
 
     /// Builds the view once, constructing its view model from the factory. The
     /// `@autoclosure` runs a single time (via `State(wrappedValue:)`) so parent
@@ -25,18 +26,31 @@ struct CharacterDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    // Static, display-only heart in this phase — the real
-                    // favorites toggle arrives with the Favorites feature.
-                    Image(systemName: "heart")
-                        .foregroundStyle(.white)
-                        .shadow(radius: 4)
-                        .accessibilityHidden(true)
+                    // Interactive only once the character is loaded — there's
+                    // nothing to favorite while loading or on failure.
+                    if let character = viewModel.character {
+                        favoriteButton(character)
+                    }
                 }
             }
             // The hero image runs under the status bar; a dark scrim sits behind
             // the back button and heart, so prefer light bar content.
             .toolbarColorScheme(.dark, for: .navigationBar)
             .task { await viewModel.onAppear() }
+    }
+
+    /// Toolbar favorite toggle over the hero image. Filled + red when favorited.
+    private func favoriteButton(_ character: RMCharacter) -> some View {
+        let isFavorite = favorites.isFavorite(id: character.id)
+        return Button {
+            Task { await favorites.toggle(character) }
+        } label: {
+            Image(systemName: isFavorite ? "heart.fill" : "heart")
+                .foregroundStyle(isFavorite ? AppColor.statusDead : .white)
+                .shadow(radius: 4)
+                .contentTransition(.symbolEffect(.replace))
+        }
+        .accessibilityLabel(isFavorite ? "Unfavorite \(character.name)" : "Favorite \(character.name)")
     }
 
     @ViewBuilder
@@ -123,6 +137,7 @@ struct CharacterDetailView: View {
             viewModel: AppContainer.preview.makeCharacterDetailViewModel(id: 1)
         )
     }
+    .environment(AppContainer.preview.favoritesStore)
 }
 
 #Preview("Character error") {
@@ -135,4 +150,5 @@ struct CharacterDetailView: View {
             )
         )
     }
+    .environment(AppContainer.preview.favoritesStore)
 }

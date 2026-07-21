@@ -6,11 +6,14 @@
 import Kingfisher
 import SwiftUI
 
-/// One character row: rounded image, name, status + species, location, and a
-/// static (non-interactive) outline heart plus chevron. Real favorites arrive
-/// with the Favorites feature.
+/// One character row: rounded image, name, status + species, location, an
+/// interactive favorite heart, and a chevron. The heart toggles favorite state
+/// on the shared `FavoritesStore` and is a separate control from the row's tap.
 struct CharacterCardView: View {
     let character: RMCharacter
+    @Environment(FavoritesStore.self) private var favorites
+
+    private var isFavorite: Bool { favorites.isFavorite(id: character.id) }
 
     var body: some View {
         HStack(spacing: AppSpacing.m) {
@@ -28,26 +31,42 @@ struct CharacterCardView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             VStack {
-                // Static, display-only heart in this phase; real favorites
-                // arrive later. Chevron just hints at the push. Both are
-                // decorative — the enclosing button conveys the action.
-                Image(systemName: "heart")
-                    .foregroundStyle(AppColor.textSecondary)
+                favoriteButton
                 Spacer()
+                // Decorative — hints at the row's push. The row's Button conveys
+                // the action, so the chevron stays hidden from VoiceOver.
                 Image(systemName: "chevron.right")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(AppColor.textSecondary.opacity(0.6))
+                    .accessibilityHidden(true)
                 Spacer()
             }
-            .accessibilityHidden(true)
         }
         .padding(AppSpacing.m)
         .background(AppColor.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        // Combine only the descriptive text; the heart stays a separate,
+        // actionable element so VoiceOver can favorite/unfavorite independently
+        // of the row's navigation tap.
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
             "\(character.name), \(character.status.title), \(character.species), \(character.locationName)"
         )
+    }
+
+    /// The favorite toggle. Its own `Button` with `.plain` style and
+    /// `.buttonStyle(.borderless)`-like isolation, so a tap here does *not*
+    /// bubble up to the row's selection button (which pushes detail).
+    private var favoriteButton: some View {
+        Button {
+            Task { await favorites.toggle(character) }
+        } label: {
+            Image(systemName: isFavorite ? "heart.fill" : "heart")
+                .foregroundStyle(isFavorite ? AppColor.statusDead : AppColor.textSecondary)
+                .contentTransition(.symbolEffect(.replace))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(isFavorite ? "Unfavorite \(character.name)" : "Favorite \(character.name)")
     }
 
     /// Character thumbnail. A fixed-size placeholder holds the layout (and shows
@@ -131,4 +150,5 @@ extension RMCharacter.Status {
         )
     )
     .padding()
+    .environment(AppContainer.preview.favoritesStore)
 }

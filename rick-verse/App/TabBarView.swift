@@ -34,7 +34,7 @@ struct TabBarView: View {
             Tab(AppCoordinator.Tab.favorites.title,
                 systemImage: AppCoordinator.Tab.favorites.systemImage,
                 value: .favorites) {
-                FavoritesTab(coordinator: coordinator.favorites)
+                FavoritesTab(coordinator: coordinator.favorites, container: container)
             }
 
             Tab(AppCoordinator.Tab.settings.title,

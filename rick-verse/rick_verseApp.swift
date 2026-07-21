@@ -15,7 +15,7 @@ struct rick_verseApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AppShellView()
+            AppShellView(container: .live)
         }
     }
 }
