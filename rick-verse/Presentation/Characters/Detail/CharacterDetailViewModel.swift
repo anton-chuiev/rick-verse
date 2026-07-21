@@ -12,8 +12,8 @@ import Observation
 ///
 /// The character fetch is a direct `CharacterDetailRepository` call — a single
 /// call with no orchestration, so per the Use Case Convention no use case sits
-/// in between. Episodes go through `FetchEpisodesUseCase` because turning a list
-/// of IDs into one batch request is real orchestration.
+/// in between. Episodes go through `FetchEpisodeBatchUseCase` because turning a
+/// list of IDs into one batch request is real orchestration.
 @Observable
 @MainActor
 final class CharacterDetailViewModel {
@@ -38,12 +38,12 @@ final class CharacterDetailViewModel {
     private(set) var episodesState: EpisodesState = .loading
 
     private let repository: CharacterDetailRepository
-    private let fetchEpisodes: FetchEpisodesUseCase
+    private let fetchEpisodes: FetchEpisodeBatchUseCase
 
     init(
         characterID: Int,
         repository: CharacterDetailRepository,
-        fetchEpisodes: FetchEpisodesUseCase
+        fetchEpisodes: FetchEpisodeBatchUseCase
     ) {
         self.characterID = characterID
         self.repository = repository
@@ -108,7 +108,7 @@ final class CharacterDetailViewModel {
         }
 
         do {
-            let response = try await fetchEpisodes.execute(EpisodesRequest(ids: character.episodeIDs))
+            let response = try await fetchEpisodes.execute(EpisodeBatchRequest(ids: character.episodeIDs))
             episodesState = response.episodes.isEmpty ? .empty : .loaded(response.episodes)
         } catch is CancellationError {
             // View went away mid-load; leave as `.loading`.

@@ -1,24 +1,24 @@
 //
-//  DefaultEpisodeRepository.swift
+//  DefaultEpisodeBatchRepository.swift
 //  rick-verse
 //
 
-/// `EpisodeRepository` backed by the Rick and Morty API via ``APIClient``.
+/// `EpisodeBatchRepository` backed by the Rick and Morty API via ``APIClient``.
 /// Fetches episodes in one batch and maps DTOs to domain, hiding two API
 /// quirks from callers:
 ///  - an empty `ids` array returns immediately with no network call;
 ///  - `GET /episode/{id}` returns a single object for one ID but an array for
 ///    several — `BatchEpisodesDTO` decodes both shapes.
-struct DefaultEpisodeRepository: EpisodeRepository {
+struct DefaultEpisodeBatchRepository: EpisodeBatchRepository {
     let apiClient: APIClient
 
-    func episodes(matching request: EpisodesRequest) async throws -> EpisodesResponse {
+    func episodes(matching request: EpisodeBatchRequest) async throws -> EpisodeBatchResponse {
         guard !request.ids.isEmpty else {
-            return EpisodesResponse(episodes: [])
+            return EpisodeBatchResponse(episodes: [])
         }
 
         let batch: BatchEpisodesDTO = try await apiClient.send(EpisodeEndpoint.batch(ids: request.ids))
-        return EpisodesResponse(episodes: batch.episodes.map { $0.toDomain() })
+        return EpisodeBatchResponse(episodes: batch.episodes.map { $0.toDomain() })
     }
 }
 
