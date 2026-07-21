@@ -181,5 +181,6 @@ struct CharactersListView: View {
         onSelect: { _ in },
         onShowFilters: {}
     )
+    .environment(AppContainer.preview.favoritesStore)
 }
 #endif

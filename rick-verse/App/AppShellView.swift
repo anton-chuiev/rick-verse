@@ -3,6 +3,7 @@
 //  rick-verse
 //
 
+import SwiftData
 import SwiftUI
 
 /// Root view of the app. Shows the splash screen, then transitions to the tab
@@ -11,9 +12,10 @@ struct AppShellView: View {
     @State private var coordinator = AppCoordinator()
     let container: AppContainer
 
-    /// Defaults to the live container for the running app; previews pass
-    /// `.preview` to stay networkless.
-    init(container: AppContainer = .live) {
+    /// The app root passes `.live`; previews pass `.preview` to stay networkless.
+    /// No default argument: `.live` is a main-actor-isolated static, so it's
+    /// referenced explicitly from a main-actor call site instead.
+    init(container: AppContainer) {
         self.container = container
     }
 
@@ -27,6 +29,13 @@ struct AppShellView: View {
                 TabBarView(coordinator: coordinator, container: container)
             }
         }
+        // The favorites SwiftData container and the shared store are installed
+        // app-wide so every tab observes the same favorites state.
+        .modelContainer(container.modelContainer)
+        .environment(container.favoritesStore)
+        // Warm the favorite-id set so hearts render correctly on first appearance
+        // of the Characters screens, before the Favorites tab is ever opened.
+        .task { await container.favoritesStore.load() }
         .animation(.default, value: coordinator.phase)
         // Deep-link entry point. Parses the incoming URL and hands the intent
         // to the coordinator, which decides tab + navigation state (or buffers
