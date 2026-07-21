@@ -24,6 +24,12 @@ Not Started
      then a `Details:` link to the spec. Full detail lives in the spec, not here.
      Minor milestones (setup, chore) get a single line, no bullets. -->
 
+### 2026-07-21 — Episodes List — Completed
+Third vertical slice — all episodes grouped by season; new paginated `/episode` stack alongside the existing by-ID batch stack.
+- Load-all (no UI pagination): `FetchAllEpisodesUseCase` walks pages sequentially into a flat list; season grouping (parsing `S0xE0y`) lives in the view model
+- Renamed the batch stack to `EpisodeBatch…` to read distinctly from the new plural `EpisodesRepository` (no behavior change)
+- Details: `context/features/episodes-list-spec.md`
+
 ### 2026-07-17 — Unit Tests (Characters List) — Completed
 First tests in the project — 46 across view model / DTO mapping / repository. No production changes; every seam already existed.
 - Both race tests verified to fail when the generation-token guard is removed
