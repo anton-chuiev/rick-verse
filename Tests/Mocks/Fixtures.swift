@@ -67,6 +67,34 @@ extension EpisodesListResponse {
     }
 }
 
+extension Location {
+    /// Minimal location for tests that only care about identity.
+    static func fixture(id: Int, name: String = "Earth (C-137)") -> Location {
+        Location(
+            id: id,
+            name: name,
+            type: "Planet",
+            dimension: "Dimension C-137",
+            residentIDs: [1]
+        )
+    }
+}
+
+extension LocationsResponse {
+    /// Page carrying locations with the given IDs.
+    static func fixture(
+        ids: [Int],
+        totalCount: Int? = nil,
+        hasNextPage: Bool = false
+    ) -> LocationsResponse {
+        LocationsResponse(
+            locations: ids.map { Location.fixture(id: $0) },
+            totalCount: totalCount ?? ids.count,
+            hasNextPage: hasNextPage
+        )
+    }
+}
+
 /// Stand-in for a real failure (network, decoding) in tests that only care that
 /// *something* went wrong.
 struct TestError: Error {}

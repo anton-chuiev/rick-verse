@@ -30,6 +30,12 @@ Third vertical slice — all episodes grouped by season; new paginated `/episode
 - Renamed the batch stack to `EpisodeBatch…` to read distinctly from the new plural `EpisodesRepository` (no behavior change)
 - Details: `context/features/episodes-list-spec.md`
 
+### 2026-07-21 — Locations List — Completed
+Fourth vertical slice — paginated, infinite-scrolling `/location` list (text-only rows, no image); VM is the Characters list VM minus search/filter. No use case (pure repository pass-through).
+- Reused `PageInfoDTO` (as Episode already does); 404→empty mirrors `DefaultCharactersRepository`; 40 new tests, all green
+- `Suspending*` test mocks index held calls by absolute order — `resume(at:)` needs the absolute index (a resumed slot is retained as nil, not removed)
+- Details: `context/features/locations-list-spec.md`
+
 ### 2026-07-17 — Unit Tests (Characters List) — Completed
 First tests in the project — 46 across view model / DTO mapping / repository. No production changes; every seam already existed.
 - Both race tests verified to fail when the generation-token guard is removed

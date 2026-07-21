@@ -8,10 +8,11 @@ import SwiftUI
 /// Root view for the Locations tab.
 struct LocationsTab: View {
     @Bindable var coordinator: LocationsCoordinator
+    let container: AppContainer
 
     var body: some View {
         NavigationStack(path: $coordinator.path) {
-            PlaceholderView(title: "Locations")
+            LocationsListView(viewModel: container.makeLocationsListViewModel())
                 .navigationDestination(for: LocationsCoordinator.Route.self) { _ in
                     EmptyView()
                 }
@@ -20,5 +21,5 @@ struct LocationsTab: View {
 }
 
 #Preview {
-    LocationsTab(coordinator: LocationsCoordinator())
+    LocationsTab(coordinator: LocationsCoordinator(), container: .preview)
 }
