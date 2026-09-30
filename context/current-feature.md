@@ -2,19 +2,31 @@
 
 <!-- Feature Name -->
 
+CI: Build & Test
+
 ## Status
 
 <!-- Not Started|In Progress|Completed -->
 
-Not Started
+In Progress
 
 ## Goals
 
 <!-- Goals & requirements -->
 
+- GitHub Actions workflow builds the app and runs all tests on every PR into `main` and every push to `main`
+- CI-ready repo: shared `rick-verse` scheme and committed `Package.resolved`
+- `main` protected by a ruleset: PR required, `build-and-test` check must be green
+- Workflow moves from local merge to merging PRs on GitHub
+
 ## Notes
 
 <!-- Any extra notes -->
+
+- Stage 1 of the CI/CD roadmap (next: lint + coverage → fastlane → release pipeline → Dependabot → signing/TestFlight guide). No paid Apple Developer account, so everything stays unsigned.
+- Repo goes public: unlimited macOS minutes and rulesets on GitHub Free
+- Xcode pinned to 26.3 (matches local), simulator iPhone 17 Pro Max / iOS 26.2; actions pinned by commit SHA
+- Spec: `context/features/ci-build-test-spec.md`
 
 ## History
 
