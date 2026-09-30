@@ -1,0 +1,66 @@
+# CI: builds the app and runs the full test suite on an iOS Simulator.
+# Spec: context/features/ci-build-test-spec.md
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A new push to the same PR/branch cancels the run that is now stale.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: the job only needs to read the repository.
+permissions:
+  contents: read
+
+jobs:
+  # The job id is the status-check name the `main` ruleset requires. Renaming it breaks the rule.
+  build-and-test:
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      # Pin Xcode to the local toolchain so CI doesn't drift when GitHub updates the runner image.
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+      DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro Max,OS=26.2
+      RESULT_BUNDLE: TestResults.xcresult
+
+    steps:
+      # Third-party actions are pinned to a full commit SHA (a tag can be moved, a SHA can't).
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+
+      # -disableAutomaticPackageResolution: build strictly against the committed Package.resolved
+      # and fail if it is out of date, instead of silently resolving new versions.
+      # Per-test timeouts turn a hung async test into a failure instead of a 30-minute stall.
+      - name: Build and test
+        run: |
+          xcodebuild test \
+            -project rick-verse.xcodeproj \
+            -scheme rick-verse \
+            -destination "$DESTINATION" \
+            -resultBundlePath "$RESULT_BUNDLE" \
+            -disableAutomaticPackageResolution \
+            -test-timeouts-enabled YES \
+            -maximum-test-execution-time-allowance 60 \
+            CODE_SIGNING_ALLOWED=NO
+
+      # On failure, attach the result bundle: download it and open it in Xcode to see what failed.
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: test-results
+          path: ${{ env.RESULT_BUNDLE }}
+          retention-days: 7

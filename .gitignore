@@ -41,6 +41,8 @@ Pods/
 #
 # Add this line if you want to avoid checking in source code from the Xcode workspace
 *.xcworkspace
+# Keep the project's embedded workspace: it holds Package.resolved (the SPM lock file CI builds against)
+!rick-verse.xcodeproj/project.xcworkspace/
 
 # Carthage
 #
