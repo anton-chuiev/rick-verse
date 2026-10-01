@@ -60,7 +60,7 @@ struct CharacterMappingTests {
         let character = try decode(characterJSON()).toDomain()
 
         #expect(character.id == 1)
-        #expect(character.name == "Rick Sanchez")
+        #expect(character.name == "Morty Smith")
         #expect(character.status == .alive)
         #expect(character.species == "Human")
         #expect(character.gender == "Male")
