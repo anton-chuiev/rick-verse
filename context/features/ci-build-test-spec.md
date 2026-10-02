@@ -36,7 +36,7 @@ This is feature 1 of a staged CI/CD roadmap. It stays deliberately minimal: one 
   1. Checkout (`actions/checkout`, SHA-pinned)
   2. Print toolchain info (`xcodebuild -version`, `xcrun simctl list runtimes`), so a failure's log starts with what ran
   3. `xcodebuild test` against the shared scheme and pinned destination, with `-resultBundlePath`, `CODE_SIGNING_ALLOWED=NO`, and per-test timeouts (`-test-timeouts-enabled YES -maximum-test-execution-time-allowance 60`). A hung async test fails the test instead of burning 30 runner minutes.
-  4. Upload the `.xcresult` bundle as an artifact on failure (`actions/upload-artifact`, SHA-pinned, short retention). Open it locally in Xcode to see exactly which test failed and why.
+  4. Upload the `.xcresult` bundle as an artifact on failure (`actions/upload-artifact`, SHA-pinned, short retention). Open it locally in Xcode to see exactly which test failed and why. The bundle is written to `build/` and that folder is uploaded: `upload-artifact` strips the common root, so uploading the `.xcresult` itself would ship only its contents and the download wouldn't open as a bundle. This was found on the deliberate red run.
 
 ### 3. Protect `main` (GitHub UI, done by the user)
 

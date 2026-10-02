@@ -2,31 +2,19 @@
 
 <!-- Feature Name -->
 
-CI: Build & Test
-
 ## Status
 
 <!-- Not Started|In Progress|Completed -->
 
-In Progress
+Not Started
 
 ## Goals
 
 <!-- Goals & requirements -->
 
-- GitHub Actions workflow builds the app and runs all tests on every PR into `main` and every push to `main`
-- CI-ready repo: shared `rick-verse` scheme and committed `Package.resolved`
-- `main` protected by a ruleset: PR required, `build-and-test` check must be green
-- Workflow moves from local merge to merging PRs on GitHub
-
 ## Notes
 
 <!-- Any extra notes -->
-
-- Stage 1 of the CI/CD roadmap (next: lint + coverage → fastlane → release pipeline → Dependabot → signing/TestFlight guide). No paid Apple Developer account, so everything stays unsigned.
-- Repo goes public: unlimited macOS minutes and rulesets on GitHub Free
-- Xcode pinned to 26.3 (matches local), simulator iPhone 17 Pro Max / iOS 26.2; actions pinned by commit SHA
-- Spec: `context/features/ci-build-test-spec.md`
 
 ## History
 
@@ -35,6 +23,13 @@ In Progress
      then max 2–3 bullets for non-trivial decisions/gotchas worth remembering,
      then a `Details:` link to the spec. Full detail lives in the spec, not here.
      Minor milestones (setup, chore) get a single line, no bullets. -->
+
+### 2026-10-02 — CI: Build & Test — Completed
+First CI/CD stage — GitHub Actions `build-and-test` builds and runs the full test suite on every PR into `main` and push to `main`; `main` is protected by a ruleset (PR + green check required, no bypass).
+- Repo made public (unlimited macOS minutes + rulesets on GitHub Free); Xcode pinned to 26.3, actions pinned by SHA; shared scheme + committed `Package.resolved`
+- A deliberate red run surfaced a real bug: `upload-artifact` strips the common root, so the `.xcresult` is uploaded via its parent `build/` folder
+- Merging now goes through GitHub PRs; marking a feature completed is the last commit in the PR, after CI is green
+- Details: `context/features/ci-build-test-spec.md`
 
 ### 2026-07-21 — Favorites — Completed
 Fifth slice and the project's first SwiftData layer — offline-capable favorites; toggle from Characters list + Character Detail, a new Favorites tab (newest-first, swipe-to-remove) that pushes Detail within its own stack.
