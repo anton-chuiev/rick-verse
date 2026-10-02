@@ -27,7 +27,7 @@ jobs:
       # Pin Xcode to the local toolchain so CI doesn't drift when GitHub updates the runner image.
       DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
       DESTINATION: platform=iOS Simulator,name=iPhone 17 Pro Max,OS=26.2
-      RESULT_BUNDLE: TestResults.xcresult
+      RESULT_BUNDLE: build/TestResults.xcresult
 
     steps:
       # Third-party actions are pinned to a full commit SHA (a tag can be moved, a SHA can't).
@@ -57,10 +57,12 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       # On failure, attach the result bundle: download it and open it in Xcode to see what failed.
+      # Upload the parent folder: upload-artifact strips the common root, so uploading the
+      # .xcresult itself would ship only its contents and the download wouldn't open as a bundle.
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-results
-          path: ${{ env.RESULT_BUNDLE }}
+          path: build/
           retention-days: 7
