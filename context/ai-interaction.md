@@ -18,10 +18,11 @@ This is the common workflow that we will use for every single feature/fix:
 4. **Test** - Verify it works by building the project and fix any errors, then cover the feature's logic with unit tests (see Testing below).
 5. **Iterate** - Iterate and change things if needed
 6. **Commit** - Only after build passes and everything works
-7. **Merge** - Merge to main
-8. **Delete Branch** - Delete branch after merge
-9. **Review** - Review AI-generated code periodically and on demand.
-10. Mark as completed in @context/current-feature.md and add to history — keep the entry short (one sentence + max 2–3 bullets + a `Details:` link to the spec, per the format comment in that file's History section); full detail goes in `context/features/<name>-spec.md`, not the history.
+7. **Pull Request** - Push the branch, open a PR into `main`, and wait for the CI check `build-and-test` to go green
+8. **Mark Completed** - As the last commit in the same PR (only after CI is green): mark as completed in @context/current-feature.md and add to history — keep the entry short (one sentence + max 2–3 bullets + a `Details:` link to the spec, per the format comment in that file's History section); full detail goes in `context/features/<name>-spec.md`, not the history. `main` accepts no direct pushes, so this can't be a separate commit after merge.
+9. **Merge** - Once CI is green again, merge the PR on GitHub, then pull `main` locally
+10. **Delete Branch** - Delete the branch (remote and local) after merge
+11. **Review** - Review AI-generated code periodically and on demand.
 
 Do NOT commit without permission and until the build passes. If build fails, fix the issues first.
 

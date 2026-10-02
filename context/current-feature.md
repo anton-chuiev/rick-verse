@@ -24,6 +24,13 @@ Not Started
      then a `Details:` link to the spec. Full detail lives in the spec, not here.
      Minor milestones (setup, chore) get a single line, no bullets. -->
 
+### 2026-10-02 — CI: Build & Test — Completed
+First CI/CD stage — GitHub Actions `build-and-test` builds and runs the full test suite on every PR into `main` and push to `main`; `main` is protected by a ruleset (PR + green check required, no bypass).
+- Repo made public (unlimited macOS minutes + rulesets on GitHub Free); Xcode pinned to 26.3, actions pinned by SHA; shared scheme + committed `Package.resolved`
+- A deliberate red run surfaced a real bug: `upload-artifact` strips the common root, so the `.xcresult` is uploaded via its parent `build/` folder
+- Merging now goes through GitHub PRs; marking a feature completed is the last commit in the PR, after CI is green
+- Details: `context/features/ci-build-test-spec.md`
+
 ### 2026-07-21 — Favorites — Completed
 Fifth slice and the project's first SwiftData layer — offline-capable favorites; toggle from Characters list + Character Detail, a new Favorites tab (newest-first, swipe-to-remove) that pushes Detail within its own stack.
 - Cross-screen live updates via one shared `@Observable FavoritesStore` in the environment — `toggle` moves `favoriteIDs` (hearts) and `favorites` (list) together, optimistic with revert
