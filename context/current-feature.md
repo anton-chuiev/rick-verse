@@ -24,6 +24,12 @@ Not Started
      then a `Details:` link to the spec. Full detail lives in the spec, not here.
      Minor milestones (setup, chore) get a single line, no bullets. -->
 
+### 2026-10-08 — Character Detail Tests — Completed
+Unit tests for the Character Detail slice (shipped before the project had tests): view model, batch-episode repository, and single-character repository, all at 100% line coverage. No production changes.
+- Unblocks the paused CI coverage gate (`feature/ci-lint-coverage`), where honest business-logic coverage was 76.3% < 80%
+- `FetchEpisodeBatchUseCase` left untested as a pass-through, per the testing guidelines
+- Details: `context/features/character-detail-tests-spec.md`
+
 ### 2026-10-02 — CI: Build & Test — Completed
 First CI/CD stage — GitHub Actions `build-and-test` builds and runs the full test suite on every PR into `main` and push to `main`; `main` is protected by a ruleset (PR + green check required, no bypass).
 - Repo made public (unlimited macOS minutes + rulesets on GitHub Free); Xcode pinned to 26.3, actions pinned by SHA; shared scheme + committed `Package.resolved`

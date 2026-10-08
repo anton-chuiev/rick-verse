@@ -7,15 +7,16 @@ import Foundation
 @testable import rick_verse
 
 extension RMCharacter {
-    /// Minimal character for tests that only care about identity.
-    static func fixture(id: Int, name: String = "Rick Sanchez") -> RMCharacter {
+    /// Minimal character for tests that only care about identity (and, for the
+    /// detail screen, which episodes it appears in).
+    static func fixture(id: Int, name: String = "Rick Sanchez", episodeIDs: [Int] = [1]) -> RMCharacter {
         RMCharacter(
             id: id,
             name: name,
             status: .alive,
             species: "Human",
             imageURL: URL(string: "https://rickandmortyapi.com/api/character/avatar/\(id).jpeg"),
-            episodeIDs: [1],
+            episodeIDs: episodeIDs,
             locationName: "Citadel of Ricks",
             gender: "Male",
             type: "",
