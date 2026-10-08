@@ -24,6 +24,12 @@ Not Started
      then a `Details:` link to the spec. Full detail lives in the spec, not here.
      Minor milestones (setup, chore) get a single line, no bullets. -->
 
+### 2026-10-08 — Characters Filter Scroll Reset (fix) — Completed
+Switching filter/search on the Characters list now opens page 1 at the top; the page number was already reset, but the `ScrollView` kept its old offset and a next page could start mid-reload with the old page number + new filter.
+- Fixed by simplifying: one in-flight `loadTask` (a first-page load cancels it, a cancelled load never applies its result, paging only starts when idle) replaces `generation` tokens, `reloadTask`, `isLoadingNextPage`
+- Scroll-to-top lives in the view (`onChange` of filter/search), not the view model; leaving the screen mid-first-load no longer cancels it
+- Details: `context/features/characters-filter-scroll-reset-spec.md`
+
 ### 2026-10-08 — Character Detail Tests — Completed
 Unit tests for the Character Detail slice (shipped before the project had tests): view model, batch-episode repository, and single-character repository, all at 100% line coverage. No production changes.
 - Unblocks the paused CI coverage gate (`feature/ci-lint-coverage`), where honest business-logic coverage was 76.3% < 80%

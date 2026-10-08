@@ -18,12 +18,20 @@ struct CharactersListViewModelTests {
     /// debounce path is still exercised.
     static let testDebounce: Duration = .milliseconds(1)
 
+    /// No back-off after a failed next page, so failure tests don't wait out the
+    /// production rate-limit delay.
+    static let testRetryBackOff: Duration = .zero
+
     /// Takes any `CharactersRepository` so the race tests can pass
     /// ``SuspendingCharactersRepository`` and everything else the plain spy.
     private func makeSUT(
         repository: some CharactersRepository
     ) -> CharactersListViewModel {
-        CharactersListViewModel(repository: repository, searchDebounce: Self.testDebounce)
+        CharactersListViewModel(
+            repository: repository,
+            searchDebounce: Self.testDebounce,
+            retryBackOff: Self.testRetryBackOff
+        )
     }
 
     /// Waits for a debounced reload to run to completion. Yields repeatedly
@@ -289,6 +297,59 @@ struct CharactersListViewModelTests {
         #expect(sut.characters.map(\.id) == [7], "A stale page must not append to the fresh list")
     }
 
+    @Test("No next page is requested while a filter reload is in flight")
+    func noNextPageDuringReload() async throws {
+        let repository = SuspendingCharactersRepository()
+        repository.results = [
+            .success(.fixture(ids: [1, 2], hasNextPage: true)),  // All, page 1
+            .success(.fixture(ids: [3, 4], hasNextPage: true)),  // All, page 2
+            .success(.fixture(ids: [7], hasNextPage: true)),     // Dead, page 1
+            .success(.fixture(ids: [8])),                        // Dead, page 2
+        ]
+        let sut = makeSUT(repository: repository)
+
+        // Scroll All down to page 2.
+        let firstPage = Task { await sut.onAppear() }
+        while repository.pendingCount < 1 { await Task.yield() }
+        repository.resume(at: 0)
+        await firstPage.value
+        let secondPage = Task { await sut.loadNextPageIfNeeded() }
+        while repository.pendingCount < 1 { await Task.yield() }
+        repository.resume(at: 1)
+        await secondPage.value
+
+        // Switching to Dead starts a reload, held open.
+        sut.statusFilter = .dead
+        while repository.pendingCount < 1 { await Task.yield() }
+
+        // The footer sentinel fires mid-reload. Without the guard this would
+        // request "Dead, page 3" — the old page number with the new filter.
+        let finished = Flag()
+        let midReload = Task {
+            await sut.loadNextPageIfNeeded()
+            finished.isSet = true
+        }
+        while !finished.isSet, repository.pendingCount < 2 { await Task.yield() }
+        let callsMidReload = repository.callCount
+
+        // Release the reload (and anything leaked) before checking, so a
+        // regression fails here rather than hanging on a held call.
+        for index in 0..<repository.callCount { repository.resume(at: index) }
+        await midReload.value
+        try #require(callsMidReload == 3, "No next-page request while the first page is reloading")
+
+        // Once the Dead page 1 lands, paging resumes from it.
+        while sut.characters.first?.id != 7 { await Task.yield() }
+
+        let nextPage = Task { await sut.loadNextPageIfNeeded() }
+        while repository.pendingCount < 1 { await Task.yield() }
+        repository.resume(at: repository.callCount - 1)
+        await nextPage.value
+
+        #expect(repository.receivedRequests.last == CharactersRequest(page: 2, status: .dead))
+        #expect(sut.characters.map(\.id) == [7, 8])
+    }
+
     // MARK: - Pagination
 
     @Test("No next-page request when there is no next page")
@@ -328,7 +389,7 @@ struct CharactersListViewModelTests {
         await sut.onAppear()
 
         repository.results = [.failure(TestError())]
-        await loadNextPageSkippingBackOff(on: sut, repository: repository)
+        await sut.loadNextPageIfNeeded()
 
         #expect(sut.characters.map(\.id) == [1, 2], "A failed page must not discard loaded items")
         #expect(sut.loadState == .loaded)
@@ -343,31 +404,9 @@ struct CharactersListViewModelTests {
         let tokenBefore = sut.paginationToken
 
         repository.results = [.failure(TestError())]
-        await loadNextPageSkippingBackOff(on: sut, repository: repository)
+        await sut.loadNextPageIfNeeded()
 
         #expect(sut.paginationToken != tokenBefore, "Pagination must not silently stall after a failure")
-        #expect(sut.isLoadingNextPage == false)
-    }
-
-    /// Runs a next-page load that is expected to fail, without waiting out the
-    /// production back-off.
-    ///
-    /// The failure path sleeps ~1s (an API rate-limit back-off) with a
-    /// hard-coded interval — unlike the debounce, it isn't injectable. Rather
-    /// than stalling the suite for a second per test, this cancels the load once
-    /// the repository call has been made: the back-off uses `try?
-    /// Task.sleep`, so cancellation cuts it short and the `defer` block still
-    /// runs, which is the behavior under test. The observable outcome is
-    /// identical, it just doesn't take a second.
-    private func loadNextPageSkippingBackOff(
-        on sut: CharactersListViewModel,
-        repository: MockCharactersRepository
-    ) async {
-        let callsBefore = repository.callCount
-        let load = Task { await sut.loadNextPageIfNeeded() }
-        while repository.callCount == callsBefore { await Task.yield() }
-        load.cancel()
-        await load.value
     }
 
     @Test("The pagination token advances after a successful next page")
@@ -385,4 +424,11 @@ struct CharactersListViewModelTests {
 
         #expect(sut.paginationToken != tokenBefore, "The footer sentinel must re-arm")
     }
+}
+
+/// Lets a test observe that a `Task` ran to completion without awaiting it —
+/// for when awaiting would hang if the behavior under test regressed.
+@MainActor
+private final class Flag {
+    var isSet = false
 }
