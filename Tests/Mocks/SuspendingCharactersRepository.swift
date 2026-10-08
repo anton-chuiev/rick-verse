@@ -7,12 +7,12 @@
 
 /// `CharactersRepository` whose calls hang until the test releases them.
 ///
-/// Exists for one job: proving the view model's generation-token race guard. To
-/// test that guard, a test has to reproduce the very situation it defends
-/// against — load A starts, load B supersedes it, and **A's response arrives
-/// last**. A plain spy (``MockCharactersRepository``) can't do that: it returns
-/// immediately, so calls always finish in the order they were made and the race
-/// never happens.
+/// Exists for one job: proving the view model's race guards (a superseded load
+/// never applies its result). To test them, a test has to reproduce the very
+/// situation they defend against — load A starts, load B supersedes it, and
+/// **A's response arrives last**. A plain spy (``MockCharactersRepository``)
+/// can't do that: it returns immediately, so calls always finish in the order
+/// they were made and the race never happens.
 ///
 /// So calls here suspend instead of returning, and the test decides the order
 /// they complete in:
