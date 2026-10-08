@@ -2,19 +2,28 @@
 
 <!-- Feature Name -->
 
+Characters Filter Scroll Reset (fix)
+
 ## Status
 
 <!-- Not Started|In Progress|Completed -->
 
-Not Started
+In Progress
 
 ## Goals
 
 <!-- Goals & requirements -->
 
+- Switching filter/search on the Characters list shows page 1 from the top (scroll to top on query change)
+- No next-page request while a first-page reload is in flight (fixes old-page-number + new-filter page mixing)
+- Simplify `CharactersListViewModel`: one in-flight `loadTask` replaces `generation` tokens, `reloadTask`, `isLoadingNextPage`
+
 ## Notes
 
 <!-- Any extra notes -->
+
+- The page number was already reset; the visible symptom is the `ScrollView` keeping its offset over the swapped-in short list, which also makes the footer sentinel fire immediately
+- Spec: `context/features/characters-filter-scroll-reset-spec.md`
 
 ## History
 

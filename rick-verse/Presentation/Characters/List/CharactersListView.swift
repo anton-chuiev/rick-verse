@@ -141,6 +141,22 @@ struct CharactersListView: View {
     }
 
     private var characterList: some View {
+        ScrollViewReader { proxy in
+            characterScrollView
+                // A new query swaps its first page in over the current list, so
+                // jump to the top now — otherwise the short new list opens at the
+                // old offset, past its first rows.
+                .onChange(of: viewModel.statusFilter) { scrollToTop(proxy) }
+                .onChange(of: viewModel.searchText) { scrollToTop(proxy) }
+        }
+    }
+
+    private func scrollToTop(_ proxy: ScrollViewProxy) {
+        guard let firstID = viewModel.characters.first?.id else { return }
+        proxy.scrollTo(firstID, anchor: .top)
+    }
+
+    private var characterScrollView: some View {
         ScrollView {
             LazyVStack(spacing: AppSpacing.m) {
                 ForEach(viewModel.characters) { character in

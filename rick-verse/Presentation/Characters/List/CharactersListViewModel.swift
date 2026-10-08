@@ -57,26 +57,6 @@ final class CharactersListViewModel {
     private(set) var characters: [RMCharacter] = []
     private(set) var totalCount: Int = 0
     private(set) var loadState: LoadState = .idle
-    /// True while a subsequent page is being appended (drives the footer
-    /// spinner). Independent from the first-page `loadState`.
-    private(set) var isLoadingNextPage = false
-
-    var searchText = "" {
-        didSet {
-            guard searchText != oldValue else { return }
-            scheduleSearch()
-        }
-    }
-
-    var statusFilter: StatusFilter = .all {
-        didSet {
-            guard statusFilter != oldValue else { return }
-            scheduleReload(debounced: false)
-        }
-    }
-
-    private let repository: CharactersRepository
-    private let searchDebounce: Duration
 
     /// Whether the API reported another page after the current one. Drives the
     /// list footer: the view shows a loading sentinel while this is true, and
@@ -89,75 +69,102 @@ final class CharactersListViewModel {
     /// instead of getting stuck until the user scrolls to recreate the row.
     private(set) var paginationToken = 0
 
+    var searchText = "" {
+        didSet {
+            guard searchText != oldValue else { return }
+            startFirstPageLoad(debounce: searchDebounce)
+        }
+    }
+
+    var statusFilter: StatusFilter = .all {
+        didSet {
+            guard statusFilter != oldValue else { return }
+            startFirstPageLoad()
+        }
+    }
+
+    private let repository: CharactersRepository
+    private let searchDebounce: Duration
+    private let retryBackOff: Duration
+
     private var currentPage = 1
-    /// The in-flight first-page load (debounced search, filter change, or
-    /// pull-to-refresh). Stored so a newer request cancels the previous one.
-    private var reloadTask: Task<Void, Never>?
-    /// Monotonic token identifying the most recent first-page query. Any result
-    /// tagged with an older token is stale and must not be applied — this
-    /// guards against out-of-order completions racing on the main actor.
-    private var generation = 0
+    /// The one load in flight — first page or next page — or `nil` when idle.
+    /// Starting a first-page load cancels it, and a cancelled load never applies
+    /// its result, so a stale response can't land over a newer one. A next page
+    /// only starts when this is `nil`, so it can't mix the previous list's page
+    /// number with a new query.
+    private var loadTask: Task<Void, Never>?
 
     init(
         repository: CharactersRepository,
-        searchDebounce: Duration = .milliseconds(300)
+        searchDebounce: Duration = .milliseconds(300),
+        retryBackOff: Duration = .seconds(1)
     ) {
         self.repository = repository
         self.searchDebounce = searchDebounce
+        self.retryBackOff = retryBackOff
     }
 
     /// Loads the first page if nothing has loaded yet. Safe to call on every
     /// `onAppear` — it no-ops once content or an error is present.
     func onAppear() async {
         guard loadState == .idle else { return }
-        await performFirstPageLoad()
+        await startFirstPageLoad().value
     }
 
     /// Reloads page 1 with the current search + filter, replacing the list.
     /// Awaits completion so pull-to-refresh keeps its spinner up until done.
     func reload() async {
-        await performFirstPageLoad()
-    }
-
-    /// Loads the next page when the list's end sentinel becomes visible. Called
-    /// from the footer's `.task(id: characters.count)`, so it re-fires every time
-    /// the list grows — the sentinel reappears under the new last row. This is
-    /// state-driven ("the end is on screen") rather than event-driven ("a row
-    /// appeared once"), so it can't get stuck if a trigger is missed while a
-    /// load is already in flight.
-    func loadNextPageIfNeeded() async {
-        guard hasNextPage, !isLoadingNextPage else { return }
-        await loadNextPage()
+        await startFirstPageLoad().value
     }
 
     /// Retries after a first-page failure.
     func retry() async {
-        await performFirstPageLoad()
+        await startFirstPageLoad().value
+    }
+
+    /// Loads the next page when the list's end sentinel becomes visible. Called
+    /// from the footer's `.task(id: paginationToken)`, so it re-fires after every
+    /// attempt. This is state-driven ("the end is on screen") rather than
+    /// event-driven ("a row appeared once"), so it can't get stuck if a trigger
+    /// is missed while a load is already in flight.
+    func loadNextPageIfNeeded() async {
+        guard hasNextPage, loadTask == nil else { return }
+        await startLoad { await self.loadNextPage() }.value
     }
 
     // MARK: - Loading
 
-    /// Kicks off a first-page load, cancelling any in-flight one. When
-    /// `debounced` is true the request waits out the debounce interval first
-    /// (used by search typing); filter changes reload immediately.
-    private func scheduleReload(debounced: Bool) {
-        reloadTask?.cancel()
-        reloadTask = Task { [searchDebounce] in
-            if debounced {
-                try? await Task.sleep(for: searchDebounce)
+    /// Makes `work` the one load in flight, cancelling the previous one.
+    @discardableResult
+    private func startLoad(_ work: @escaping @MainActor () async -> Void) -> Task<Void, Never> {
+        loadTask?.cancel()
+        let task = Task {
+            await work()
+            // Only a superseded load is cancelled, so an uncancelled one is
+            // still the current load.
+            if !Task.isCancelled {
+                loadTask = nil
+            }
+        }
+        loadTask = task
+        return task
+    }
+
+    /// Starts a first-page load. `debounce` (search typing) waits before the
+    /// request, so a newer keystroke cancels this one before it hits the API.
+    @discardableResult
+    private func startFirstPageLoad(debounce: Duration? = nil) -> Task<Void, Never> {
+        startLoad {
+            if let debounce {
+                try? await Task.sleep(for: debounce)
                 guard !Task.isCancelled else { return }
             }
-            await performFirstPageLoad()
+            await self.loadFirstPage()
         }
     }
 
-    private func scheduleSearch() {
-        scheduleReload(debounced: true)
-    }
-
-    private func performFirstPageLoad() async {
-        generation += 1
-        let token = generation
+    private func loadFirstPage() async {
         // Only show the full-screen skeleton when there's nothing on screen
         // yet. A reload over an existing list (pull-to-refresh, filter, search)
         // keeps the current content in place — the list is swapped in when the
@@ -167,30 +174,26 @@ final class CharactersListViewModel {
             loadState = .loading
         }
 
-        let request = makeRequest(page: 1)
         do {
-            let page = try await repository.characters(matching: request)
-            // A newer load started while this one was in flight — drop it so an
-            // out-of-order completion can't overwrite fresher results.
-            guard token == generation else { return }
+            let page = try await repository.characters(matching: makeRequest(page: 1))
+            // Superseded while in flight — the newer load owns the state now.
+            guard !Task.isCancelled else { return }
             characters = page.characters
             totalCount = page.totalCount
             currentPage = 1
             hasNextPage = page.hasNextPage
             loadState = page.characters.isEmpty ? .empty : .loaded
         } catch is CancellationError {
-            // Cancelled (superseded, or the view was covered/dismissed before
-            // the load finished). If this was the first load, reset to `.idle`
-            // so re-appearing re-triggers it — otherwise the screen would stay
-            // stuck on the skeleton. A reload over existing content keeps it.
-            guard token == generation else { return }
-            if isFirstLoad {
+            // Not a failure. If nothing superseded it and nothing is on screen,
+            // reset to `.idle` so re-appearing re-triggers the load instead of
+            // leaving the skeleton up. A reload over existing content keeps it.
+            if isFirstLoad, !Task.isCancelled {
                 loadState = .idle
             }
         } catch {
-            // A cancelled task must not surface as a failure — only a real error
-            // should. `token` staleness covers superseding loads.
-            guard token == generation, !Task.isCancelled else { return }
+            // A superseded load must not surface as a failure (URLSession
+            // reports cancellation as `URLError`, not `CancellationError`).
+            guard !Task.isCancelled else { return }
             characters = []
             totalCount = 0
             hasNextPage = false
@@ -199,37 +202,27 @@ final class CharactersListViewModel {
     }
 
     private func loadNextPage() async {
-        let token = generation
-        isLoadingNextPage = true
         // Bumping the pagination token re-arms the footer sentinel's `.task`,
         // whether the load succeeds (list grew, sentinel moved down under the
         // new last row) or fails (sentinel still on screen, needs to retry).
         // Done on every exit so pagination can never silently stall.
-        defer {
-            isLoadingNextPage = false
-            if token == generation {
-                paginationToken += 1
-            }
-        }
+        defer { paginationToken += 1 }
 
-        let request = makeRequest(page: currentPage + 1)
         do {
-            let page = try await repository.characters(matching: request)
-            // A first-page reload happened mid-fetch — this page belongs to the
-            // old query, so discard it.
-            guard token == generation else { return }
+            let page = try await repository.characters(matching: makeRequest(page: currentPage + 1))
+            // A first-page reload replaced the list mid-fetch — this page
+            // belongs to the old query, so discard it.
+            guard !Task.isCancelled else { return }
             characters.append(contentsOf: page.characters)
             totalCount = page.totalCount
             currentPage += 1
             hasNextPage = page.hasNextPage
-        } catch is CancellationError {
-            // Superseded or the view went away — leave state as-is.
         } catch {
             // A page-N failure (typically the API's HTTP 429 rate limit under a
             // fast scroll) keeps already-loaded items. Back off briefly so the
-            // sentinel's re-armed `.task` doesn't hammer the API immediately.
-            guard token == generation else { return }
-            try? await Task.sleep(for: .seconds(1))
+            // sentinel's re-armed `.task` doesn't hammer the API immediately; a
+            // first-page reload cancels the wait.
+            try? await Task.sleep(for: retryBackOff)
         }
     }
 
