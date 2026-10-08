@@ -2,19 +2,28 @@
 
 <!-- Feature Name -->
 
+Character Detail Tests
+
 ## Status
 
 <!-- Not Started|In Progress|Completed -->
 
-Not Started
+In Progress
 
 ## Goals
 
 <!-- Goals & requirements -->
 
+- Unit tests for `CharacterDetailViewModel`, `DefaultEpisodeBatchRepository`, `DefaultCharacterDetailRepository`
+- No production changes; mocks at the existing protocol seams
+
 ## Notes
 
 <!-- Any extra notes -->
+
+- Unblocks the CI coverage gate (`feature/ci-lint-coverage`, paused): honest business-logic coverage is 76.3% < 80%
+- `FetchEpisodeBatchUseCase` is a pass-through: not tested, per the testing guidelines
+- Spec: `context/features/character-detail-tests-spec.md`
 
 ## History
 
