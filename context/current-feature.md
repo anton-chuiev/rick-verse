@@ -24,6 +24,11 @@ Not Started
      then a `Details:` link to the spec. Full detail lives in the spec, not here.
      Minor milestones (setup, chore) get a single line, no bullets. -->
 
+### 2026-10-11 — Extract FavoriteHeartButton (refactor) — Completed
+The favorite heart on character cards and Character Detail is now one `FavoriteHeartButton` view, the only reader of `FavoritesStore` there, so a toggle re-evaluates just the heart instead of every rendered card and the whole Detail body.
+- Per-site styling stays at the call site (`offColor` param; card `.plain`, detail `.shadow`); no behavior change, no new tests (no logic beyond the tested store)
+- Details: `context/features/favorite-heart-button-spec.md`
+
 ### 2026-10-08 — Characters Filter Scroll Reset (fix) — Completed
 Switching filter/search on the Characters list now opens page 1 at the top; the page number was already reset, but the `ScrollView` kept its old offset and a next page could start mid-reload with the old page number + new filter.
 - Fixed by simplifying: one in-flight `loadTask` (a first-page load cancels it, a cancelled load never applies its result, paging only starts when idle) replaces `generation` tokens, `reloadTask`, `isLoadingNextPage`
