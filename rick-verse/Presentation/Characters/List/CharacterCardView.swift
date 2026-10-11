@@ -11,9 +11,6 @@ import SwiftUI
 /// on the shared `FavoritesStore` and is a separate control from the row's tap.
 struct CharacterCardView: View {
     let character: RMCharacter
-    @Environment(FavoritesStore.self) private var favorites
-
-    private var isFavorite: Bool { favorites.isFavorite(id: character.id) }
 
     var body: some View {
         HStack(spacing: AppSpacing.m) {
@@ -31,7 +28,10 @@ struct CharacterCardView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             VStack {
-                favoriteButton
+                // `.plain` isolates the heart's tap from the row's selection
+                // button (which pushes detail).
+                FavoriteHeartButton(character: character, offColor: AppColor.textSecondary)
+                    .buttonStyle(.plain)
                 Spacer()
                 // Decorative — hints at the row's push. The row's Button conveys
                 // the action, so the chevron stays hidden from VoiceOver.
@@ -52,21 +52,6 @@ struct CharacterCardView: View {
         .accessibilityLabel(
             "\(character.name), \(character.status.title), \(character.species), \(character.locationName)"
         )
-    }
-
-    /// The favorite toggle. Its own `Button` with `.plain` style and
-    /// `.buttonStyle(.borderless)`-like isolation, so a tap here does *not*
-    /// bubble up to the row's selection button (which pushes detail).
-    private var favoriteButton: some View {
-        Button {
-            Task { await favorites.toggle(character) }
-        } label: {
-            Image(systemName: isFavorite ? "heart.fill" : "heart")
-                .foregroundStyle(isFavorite ? AppColor.statusDead : AppColor.textSecondary)
-                .contentTransition(.symbolEffect(.replace))
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(isFavorite ? "Unfavorite \(character.name)" : "Favorite \(character.name)")
     }
 
     /// Character thumbnail. A fixed-size placeholder holds the layout (and shows

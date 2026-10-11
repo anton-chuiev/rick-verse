@@ -11,7 +11,6 @@ import SwiftUI
 /// in independently.
 struct CharacterDetailView: View {
     @State private var viewModel: CharacterDetailViewModel
-    @Environment(FavoritesStore.self) private var favorites
 
     /// Builds the view once, constructing its view model from the factory. The
     /// `@autoclosure` runs a single time (via `State(wrappedValue:)`) so parent
@@ -29,7 +28,8 @@ struct CharacterDetailView: View {
                     // Interactive only once the character is loaded — there's
                     // nothing to favorite while loading or on failure.
                     if let character = viewModel.character {
-                        favoriteButton(character)
+                        FavoriteHeartButton(character: character, offColor: .white)
+                            .shadow(radius: 4)
                     }
                 }
             }
@@ -37,20 +37,6 @@ struct CharacterDetailView: View {
             // the back button and heart, so prefer light bar content.
             .toolbarColorScheme(.dark, for: .navigationBar)
             .task { await viewModel.onAppear() }
-    }
-
-    /// Toolbar favorite toggle over the hero image. Filled + red when favorited.
-    private func favoriteButton(_ character: RMCharacter) -> some View {
-        let isFavorite = favorites.isFavorite(id: character.id)
-        return Button {
-            Task { await favorites.toggle(character) }
-        } label: {
-            Image(systemName: isFavorite ? "heart.fill" : "heart")
-                .foregroundStyle(isFavorite ? AppColor.statusDead : .white)
-                .shadow(radius: 4)
-                .contentTransition(.symbolEffect(.replace))
-        }
-        .accessibilityLabel(isFavorite ? "Unfavorite \(character.name)" : "Favorite \(character.name)")
     }
 
     @ViewBuilder
